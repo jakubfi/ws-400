@@ -6,12 +6,13 @@ PRJSRC=wyswietlacz.c hd44780.c i2cmaster.S mcp23017.c chars.c pins.c
 INC=
 LIBS=
 OPTLEVEL=s
-#AVRDUDE_PROGRAMMERID=stk500v2
-#AVRDUDE_OPTS=-P avrdoper
-AVRDUDE_PROGRAMMERID=wiring
-AVRDUDE_OPTS=-D -P /dev/ttyUSB1 -b115200
 HEXFORMAT=ihex
 
+AVRDUDE_PROD_PROGRAMMERID=stk500v2
+AVRDUDE_PROD_OPTS=-P avrdoper
+
+AVRDUDE_DEV_PROGRAMMERID=wiring
+AVRDUDE_DEV_OPTS=-D -P /dev/ttyUSB1 -b115200
 
 # compiler
 CFLAGS=-I. $(INC) -g -mmcu=$(MCU) -O$(OPTLEVEL) \
@@ -84,10 +85,10 @@ GENASMFILES=$(filter %.s, $(OBJDEPS:.o=.s))
 	.hex .ee.hex .h .hh .hpp
 
 
-.PHONY: writeflash clean stats gdbinit stats
+.PHONY: dev prod clean stats gdbinit stats
 
 # Make targets:
-# all, disasm, stats, hex, writeflash/install, clean
+# all, disasm, stats, hex, dev, prod, clean
 all: $(TRG)
 
 disasm: $(DUMPTRG) stats
@@ -98,30 +99,26 @@ stats: $(TRG)
 
 hex: $(HEXTRG)
 
-
-writeflash: hex
-	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID)   \
+dev: hex
+	$(AVRDUDE) -c $(AVRDUDE_DEV_PROGRAMMERID)   \
 	 -p $(PROGRAMMER_MCU)                   \
-	 $(AVRDUDE_OPTS)			\
+	 $(AVRDUDE_DEV_OPTS)			\
 	 -U flash:w:$(HEXROMTRG)
 
-writestk: hex
-	$(AVRDUDE) -e -c stk500v2		\
+prod: hex
+	$(AVRDUDE) -c $(AVRDUDE_PROD_PROGRAMMERID)   \
 	 -p $(PROGRAMMER_MCU)                   \
-	 -D -P avrdoper			\
+	 $(AVRDUDE_PROD_OPTS)			\
 	 -U flash:w:$(HEXROMTRG)
 
 fuses:
 	avrdude -e -c stk500v2 -p $(PROGRAMMER_MCU) -D -P avrdoper -U lfuse:w:0xCF:m -U hfuse:w:0xD9:m
 
-install: writeflash
-final: writestk
-
 $(DUMPTRG): $(TRG) 
 	$(OBJDUMP) -S  $< > $@
 
 
-$(TRG): $(OBJDEPS) 
+$(TRG): $(OBJDEPS)
 	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS)
 
 
@@ -143,7 +140,7 @@ $(TRG): $(OBJDEPS)
 
 #### Generating object files ####
 # object from C
-.c.o: 
+.c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
@@ -168,7 +165,6 @@ $(TRG): $(OBJDEPS)
 	$(OBJCOPY) -j .eeprom                  \
 		--change-section-lma .eeprom=0 \
 		-O $(HEXFORMAT) $< $@
-
 
 #####  Generating a gdb initialisation file    #####
 ##### Use by launching simulavr and avr-gdb:   #####
