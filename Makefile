@@ -1,6 +1,6 @@
-MCU=atmega2560
-DEFINES=-DF_CPU=16000000UL
-PROGRAMMER_MCU=atmega2560
+MCU=atmega328p
+DEFINES=-DF_CPU=8000000UL
+PROGRAMMER_MCU=atmega328p
 PROJECTNAME=wyswietlacz
 PRJSRC=wyswietlacz.c hd44780.c i2cmaster.S mcp23017.c chars.c pins.c
 INC=
@@ -32,6 +32,7 @@ CPPFLAGS=-fno-exceptions               \
 
 # assembler
 ASMFLAGS =-I. $(INC) -mmcu=$(MCU)        \
+	$(DEFINES) \
 	-x assembler-with-cpp            \
 	-Wa,-gstabs,-ahlms=$(firstword   \
 		$(<:.S=.lst) $(<.s=.lst))
@@ -112,7 +113,7 @@ prod: hex
 	 -U flash:w:$(HEXROMTRG)
 
 fuses:
-	avrdude -e -c stk500v2 -p $(PROGRAMMER_MCU) -D -P avrdoper -U lfuse:w:0xCF:m -U hfuse:w:0xD9:m
+	avrdude -e -c $(AVRDUDE_PROD_PROGRAMMERID) -p $(PROGRAMMER_MCU) -D $(AVRDUDE_PROD_OPTS) -U lfuse:w:0xE2:m -U hfuse:w:0xD9:m
 
 $(DUMPTRG): $(TRG) 
 	$(OBJDUMP) -S  $< > $@

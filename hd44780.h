@@ -5,21 +5,21 @@
 
 // --- port setup --------------------------------------------------------
 
-#define LCD_RS_DIR	DDRK
-#define LCD_RS_PORT	PORTK
-#define LCD_RS		(1 << PK2)
+#define LCD_RS_DIR	DDRB
+#define LCD_RS_PORT	PORTB
+#define LCD_RS		(1 << PB0)
 
-#define LCD_RW_DIR	DDRK
-#define LCD_RW_PORT	PORTK
-#define LCD_RW		(1 << PK1)
+#define LCD_RW_DIR	DDRB
+#define LCD_RW_PORT	PORTB
+#define LCD_RW		(1 << PB1)
 
-#define LCD_E_DIR	DDRK
-#define LCD_E_PORT	PORTK
-#define LCD_E		(1 << PK0)
+#define LCD_E_DIR	DDRB
+#define LCD_E_PORT	PORTB
+#define LCD_E		(1 << PB2)
 
-#define LCD_DATA_DIR	DDRF
-#define LCD_DATA_PORT	PORTF
-#define LCD_DATA_PIN	PINF
+#define LCD_DATA_DIR	DDRD
+#define LCD_DATA_PORT	PORTD
+#define LCD_DATA_PIN	PIND
 
 // --- HD44780 commands --------------------------------------------------
 

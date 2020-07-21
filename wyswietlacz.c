@@ -9,11 +9,11 @@
 #include "chars.h"
 #include "pins.h"
 
-#define SW_DIR	DDRK
-#define SW_PORT	PORTK
-#define SW_PIN	PINK
-#define SW_SEL	(1 << PK3)
-#define SW_OK	(1 << PK4)
+#define SW_DIR	DDRC
+#define SW_PORT	PORTC
+#define SW_PIN	PINC
+#define SW_SEL	(1 << PC3)
+#define SW_OK	(1 << PC2)
 
 MCP23017 dev[6];
 
