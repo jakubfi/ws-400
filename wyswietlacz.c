@@ -16,55 +16,35 @@
 #define SW_OK	(1 << PC2)
 
 MCP23017 dev[6];
+uint8_t bus[12];
 
 // -----------------------------------------------------------------------
 void read_state()
 {
-#define SET(row, pin) dev[row[pin-1].ic_addr].data |= (1 << row[pin-1].bit)
-
-	//SET(row_D, 88);
-	//dev[0].data = 0xffff;
-	//dev[1].data = 0xffff;
-	//dev[2].data = 0xffff;
-	//dev[3].data = 0xffff;
-	//dev[4].data = 0xffff;
-	//dev[5].data = 0xffff;
-	dev[0].data = rand();
-	dev[1].data = rand();
-	dev[2].data = rand();
-	dev[3].data = rand();
-	dev[4].data = rand();
-	dev[5].data = rand();
+	for (uint8_t i=0 ; i<6 ; i++) {
+		bus[2*i+0] = mcp23017_read_register(dev+i, MCP23017_GPIOB);
+		bus[2*i+1] = mcp23017_read_register(dev+i, MCP23017_GPIOA);
+	}
 }
 
 // -----------------------------------------------------------------------
 void print_raw()
 {
-	char buf[] = "      ";
-
-	for (uint8_t i=0 ; i<6 ; i++) {
-		uint8_t p = 0;
-		for (int8_t n=12 ; n>=0 ; n-=4) {
-			buf[p++] = (dev[i].data >> n) & 0b1111;
-		}
-		lcd_setpos(5*(i%3), i/3);
-		lcd_puts(buf, 5);
-	}
 }
 
 // -----------------------------------------------------------------------
 void print_state(const struct signal *s)
 {
-	lcd_setpos(0, 0);
-	while (s->name) {
-		uint8_t ic = s->loc->ic_addr;
-		uint8_t bit = s->loc->bit;
-		if (((dev[ic].data >> bit) & 1)) {
-			lcd_print(s->name);
-			lcd_print(" ");
-		}
-		s++;
-	}
+//	lcd_setpos(0, 0);
+//	while (s->name) {
+//		uint8_t ic = s->loc->ic_addr;
+//		uint8_t bit = s->loc->bit;
+//		if (((dev[ic].data >> bit) & 1)) {
+//			lcd_print(s->name);
+//			lcd_print(" ");
+//		}
+//		s++;
+//	}
 }
 
 uint8_t CONN_COUNT = 10;
@@ -153,25 +133,35 @@ int main(void) {
 	SW_DIR &= ~(SW_SEL|SW_OK);
 	SW_PORT |= (SW_SEL|SW_OK);
 
+	for (uint8_t i=0 ; i<6 ; i++) {
+		mcp23017_init(dev+i, i);
+		mcp23017_write_register(dev+i, MCP23017_IODIRA, 0xff);
+		mcp23017_write_register(dev+i, MCP23017_IODIRB, 0xff);
+		mcp23017_write_register(dev+i, MCP23017_IPOLA, 0);
+		mcp23017_write_register(dev+i, MCP23017_IPOLB, 0);
+		mcp23017_write_register(dev+i, MCP23017_GPPUA, 0xff);
+		mcp23017_write_register(dev+i, MCP23017_GPPUB, 0xff);
+	}
+
 	lcd_init();
+	lcd_cg_set(0x0, d0000);
+	lcd_cg_set(0x1, d0001);
+	lcd_cg_set(0x2, d0010);
+	lcd_cg_set(0x3, d0011);
+	lcd_cg_set(0x4, d0100);
+	lcd_cg_set(0x5, d0101);
+	lcd_cg_set(0x6, d0110);
+	lcd_cg_set(0x7, d0111);
+	//lcd_cg_set(0x8, d1000);
+	//lcd_cg_set(0x9, d1001);
+	//lcd_cg_set(0xa, d1010);
+	//lcd_cg_set(0xb, d1011);
+	//lcd_cg_set(0xc, d1100);
+	//lcd_cg_set(0xd, d1101);
+	//lcd_cg_set(0xe, d1110);
+	//lcd_cg_set(0xf, d1111);
 	lcd_clear();
 	lcd_home();
-	lcd_cg_set(0, d0000);
-	lcd_cg_set(1, d0001);
-	lcd_cg_set(2, d0010);
-	lcd_cg_set(3, d0011);
-	lcd_cg_set(4, d0100);
-	lcd_cg_set(5, d0101);
-	lcd_cg_set(6, d0110);
-	lcd_cg_set(7, d0111);
-	lcd_cg_set(8, d1000);
-	lcd_cg_set(9, d1001);
-	lcd_cg_set(10, d1010);
-	lcd_cg_set(11, d1011);
-	lcd_cg_set(12, d1100);
-	lcd_cg_set(13, d1101);
-	lcd_cg_set(14, d1110);
-	lcd_cg_set(15, d1111);
 
 //	const struct signal *conn;
 //	conn = autodetect();
@@ -181,10 +171,30 @@ int main(void) {
 
 	lcd_clear();
 
+	lcd_setpos(0, 0);
+	lcd_write_data(0x0);
+	lcd_write_data(0x1);
+	lcd_write_data(0x2);
+	lcd_write_data(0x3);
+	lcd_write_data(0x4);
+	lcd_write_data(0x5);
+	lcd_write_data(0x6);
+	lcd_write_data(0x7);
+
+	lcd_setpos(0, 1);
+	lcd_write_data(0x8);
+	lcd_write_data(0x9);
+	lcd_write_data(0xa);
+	lcd_write_data(0xb);
+	lcd_write_data(0xc);
+	lcd_write_data(0xd);
+	lcd_write_data(0xe);
+	lcd_write_data(0xf);
+	while (1);
 	while (1) {
 		read_state();
 		print_raw();
-		_delay_ms(500);
+		_delay_ms(100);
 	}
 }
 

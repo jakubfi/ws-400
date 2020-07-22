@@ -1,6 +1,6 @@
 #include <inttypes.h>
 
-const uint8_t d0000[] = {
+const __flash uint8_t d0000[] = {
 	0b00000,
 	0b10010,
 	0b00000,
@@ -11,7 +11,7 @@ const uint8_t d0000[] = {
 	0b00000,
 };
 
-const uint8_t d0001[] = {
+const __flash uint8_t d0001[] = {
 	0b00000,
 	0b10010,
 	0b00000,
@@ -22,7 +22,7 @@ const uint8_t d0001[] = {
 	0b00000,
 };
 
-const uint8_t d0100[] = {
+const __flash uint8_t d0100[] = {
 	0b00000,
 	0b10010,
 	0b00000,
@@ -33,7 +33,7 @@ const uint8_t d0100[] = {
 	0b00000,
 };
 
-const uint8_t d0101[] = {
+const __flash uint8_t d0101[] = {
 	0b00000,
 	0b10010,
 	0b00000,
@@ -44,7 +44,7 @@ const uint8_t d0101[] = {
 	0b00000,
 };
 
-const uint8_t d0010[] = {
+const __flash uint8_t d0010[] = {
 	0b00010,
 	0b10010,
 	0b00010,
@@ -55,7 +55,7 @@ const uint8_t d0010[] = {
 	0b00000,
 };
 
-const uint8_t d0011[] = {
+const __flash uint8_t d0011[] = {
 	0b00010,
 	0b10010,
 	0b00010,
@@ -66,7 +66,7 @@ const uint8_t d0011[] = {
 	0b00000,
 };
 
-const uint8_t d0110[] = {
+const __flash uint8_t d0110[] = {
 	0b00010,
 	0b10010,
 	0b00010,
@@ -77,7 +77,7 @@ const uint8_t d0110[] = {
 	0b00000,
 };
 
-const uint8_t d0111[] = {
+const __flash uint8_t d0111[] = {
 	0b00010,
 	0b10010,
 	0b00010,
@@ -88,7 +88,7 @@ const uint8_t d0111[] = {
 	0b00000,
 };
 
-const uint8_t d1000[] = {
+const __flash uint8_t d1000[] = {
 	0b10000,
 	0b10010,
 	0b10000,
@@ -99,7 +99,7 @@ const uint8_t d1000[] = {
 	0b00000,
 };
 
-const uint8_t d1001[] = {
+const __flash uint8_t d1001[] = {
 	0b10000,
 	0b10010,
 	0b10000,
@@ -110,7 +110,7 @@ const uint8_t d1001[] = {
 	0b00000,
 };
 
-const uint8_t d1100[] = {
+const __flash uint8_t d1100[] = {
 	0b10000,
 	0b10010,
 	0b10000,
@@ -121,7 +121,7 @@ const uint8_t d1100[] = {
 	0b00000,
 };
 
-const uint8_t d1101[] = {
+const __flash uint8_t d1101[] = {
 	0b10000,
 	0b10010,
 	0b10000,
@@ -132,7 +132,7 @@ const uint8_t d1101[] = {
 	0b00000,
 };
 
-const uint8_t d1010[] = {
+const __flash uint8_t d1010[] = {
 	0b10010,
 	0b10010,
 	0b10010,
@@ -143,7 +143,7 @@ const uint8_t d1010[] = {
 	0b00000,
 };
 
-const uint8_t d1011[] = {
+const __flash uint8_t d1011[] = {
 	0b10010,
 	0b10010,
 	0b10010,
@@ -154,7 +154,7 @@ const uint8_t d1011[] = {
 	0b00000,
 };
 
-const uint8_t d1110[] = {
+const __flash uint8_t d1110[] = {
 	0b10010,
 	0b10010,
 	0b10010,
@@ -165,7 +165,7 @@ const uint8_t d1110[] = {
 	0b00000,
 };
 
-const uint8_t d1111[] = {
+const __flash uint8_t d1111[] = {
 	0b10010,
 	0b10010,
 	0b10010,

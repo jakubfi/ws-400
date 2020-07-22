@@ -126,16 +126,12 @@ void lcd_home()
 }
 
 // -----------------------------------------------------------------------
-void lcd_cg_set(const uint8_t ch, const uint8_t *chdata)
+void lcd_cg_set(const uint8_t ch, const __flash uint8_t *chdata)
 {
-	uint8_t addr = lcd_read_data() & 0b1111111;
-
-	lcd_write_cmd(HD44780_CGRAM_ADDR | (ch*8));
+	lcd_write_cmd(HD44780_CGRAM_ADDR | (ch<<3));
 	for (unsigned int i = 0 ; i<8 ; i++) {
 		lcd_write_data(*(chdata++));
 	}
-
-	lcd_write_cmd(HD44780_DDRAM_ADDR | addr);
 }
 
 // -----------------------------------------------------------------------

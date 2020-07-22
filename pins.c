@@ -39,7 +39,7 @@ const struct pinloc row_D[] = {
 #define D(n) (row_D+n-1)
 #define C(n) (row_C+n-1)
 
-const struct signal PX[] = {
+const __flash struct signal PX[] = {
 	{"P0",	D(52), NULL, POS},
 	{"P1",	D(53), NULL, POS},
 	{"P2",	D(50), NULL, POS},
@@ -85,7 +85,7 @@ const struct signal PX[] = {
 
 const struct pinloc *LG[] = { D(23), D(24), D(22), NULL };
 const struct pinloc *LK[] = { C(27), C(21), C(24), C(25), NULL };
-const struct signal PM[] = {
+const __flash struct signal PM[] = {
 	{"LG",		NULL, LG, POS},
 	{"LK",		NULL, LK, POS},
 
@@ -109,7 +109,7 @@ const struct signal PM[] = {
 const struct pinloc *NPA[] = { D(8), D(9), D(7), D(10), NULL };
 const struct pinloc *NPB[] = { D(25), D(26), D(28), D(27), NULL };
 const struct pinloc *RS[] = { C(5), C(9), C(6), C(8), C(7), C(2), C(4), C(3), D(8), C(10), NULL };
-const struct signal PP[] = {
+const __flash struct signal PP[] = {
 	{ "NPA", NULL, NPA, POS },
 	{ "NPB", NULL, NPB, POS },
 	{ "RS", NULL, RS, POS },
@@ -119,7 +119,7 @@ const struct signal PP[] = {
 const struct pinloc *DNB[] = { D(40), D(41), D(42), D(43), NULL };
 const struct pinloc *R[] = { C(47), C(46), C(48), NULL };
 const struct pinloc *KI[] = { D(45), D(44), NULL };
-const struct signal PR[] = {
+const __flash struct signal PR[] = {
 	{ "DNB", NULL, DNB, POS },
 	{ "BLR", C(41), NULL, NEG },
 	{ "W>R", C(43), NULL, NEG },
@@ -130,7 +130,7 @@ const struct signal PR[] = {
 	{NULL}
 };
 
-const struct signal PA[] = {
+const __flash struct signal PA[] = {
 	{ "W>AC", C(50), NULL, POS },
 	{ "W>IC", C(51), NULL, POS },
 	{ "W>DT", D(52), NULL, NEG },
@@ -150,7 +150,7 @@ const struct signal PA[] = {
 
 const struct pinloc *FD[] = { C(21), C(22), C(23), C(24), C(39), C(40), C(41), C(42), NULL };
 const struct pinloc *FIC1[] = { C(44), C(45), C(46), C(47), NULL };
-const struct signal FPAR[] = {
+const __flash struct signal FPAR[] = {
 	{ "D", NULL, FD, POS },
 	{ "FIC1", NULL, FIC1, POS },
 	{ "SGN", D(21), NULL, POS },
@@ -165,7 +165,7 @@ const struct signal FPAR[] = {
 };
 
 const struct pinloc *FIC2[] = { C(51), C(50), NULL };
-const struct signal FPAL[] = {
+const __flash struct signal FPAL[] = {
 	{ "G", C(49), NULL, POS },
 	{ "FIC2", NULL, FIC2, POS },
 	{ "DI", C(52), NULL, POS },
@@ -181,7 +181,7 @@ const struct signal FPAL[] = {
 };
 
 const struct pinloc *T1[] = { D(7), D(6), C(2), D(4), C(4), D(7), C(8), C(9), C(21), C(10), C(22), C(20), C(23), C(25), C(26), C(24), C(27), C(41), C(29), C(39), C(42), C(44), C(28), C(40), C(47), C(48), NULL };
-const struct signal FPMR[] = {
+const __flash struct signal FPMR[] = {
 	{ "T1", NULL, T1, POS},
 	{ "TAB", C(1), NULL, NEG },
 	{ "TAA", D(1), NULL, NEG },
@@ -208,7 +208,7 @@ const struct signal FPMR[] = {
 };
 
 const struct pinloc *T2[] = { C(49), C(50), C(58), C(53), C(52), C(54), C(68), C(69), C(70), C(72), C(89), C(88), C(86), C(71), NULL };
-const struct signal FPML[] = {
+const __flash struct signal FPML[] = {
 	{ "T2", NULL, T2, POS},
 	{ "0>M", C(55), NULL, NEG },
 	{ "F9KA", C(56), NULL, POS },
@@ -223,7 +223,7 @@ const struct signal FPML[] = {
 	{NULL}
 };
 
-const struct signal FPS[] = {
+const __flash struct signal FPS[] = {
 	{ "F1", C(73), NULL, POS },
 	{ "F2", C(74), NULL, POS },
 	{ "F3", C(72), NULL, POS },
