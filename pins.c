@@ -2,244 +2,213 @@
 #include <stddef.h>
 #include "pins.h"
 
-#define P(u, b, p) { u, b<<3 | p }
-#define D(n) (row_D+n-1)
-#define C(n) (row_C+n-1)
+#define Dr(n) (48-n)
+#define Cr(n) (48-n+48)
 
-const struct pinloc row_C[] = {
-/*0*/ 	P(5,0,0), P(5,0,2),	P(5,0,4), P(5,0,6), P(5,1,0), P(5,1,2), P(5,1,4), P(5,1,6),
-/*8*/ 	P(4,0,0), P(4,0,2), P(4,0,4), P(4,0,6), P(4,1,0), P(4,1,2), P(4,1,4), P(4,1,6),
-/*16*/	P(3,0,0), P(3,0,2), P(3,0,4), P(3,0,6), P(3,1,0), P(3,1,2), P(3,1,4), P(3,1,6),
-/*24*/	P(2,0,0), P(2,0,2), P(2,0,4), P(2,0,6), P(2,1,0), P(2,1,2), P(2,1,4), P(2,1,6),
-/*32*/	P(1,0,0), P(1,0,2), P(1,0,4), P(1,0,6), P(1,1,0), P(1,1,2), P(1,1,4), P(1,1,6),
-/*40*/	P(0,0,0), P(0,0,2), P(0,0,4), P(0,0,6), P(0,1,0), P(0,1,2), P(0,1,4), P(0,1,6),
-/*48*/	P(5,0,0), P(5,0,2),	P(5,0,4), P(5,0,6), P(5,1,0), P(5,1,2), P(5,1,4), P(5,1,6),
-/*56*/	P(4,0,0), P(4,0,2), P(4,0,4), P(4,0,6), P(4,1,0), P(4,1,2), P(4,1,4), P(4,1,6),
-/*64*/	P(3,0,0), P(3,0,2), P(3,0,4), P(3,0,6), P(3,1,0), P(3,1,2), P(3,1,4), P(3,1,6),
-/*72*/	P(2,0,0), P(2,0,2), P(2,0,4), P(2,0,6), P(2,1,0), P(2,1,2), P(2,1,4), P(2,1,6),
-/*80*/	P(1,0,0), P(1,0,2), P(1,0,4), P(1,0,6), P(1,1,0), P(1,1,2), P(1,1,4), P(1,1,6),
-/*88*/	P(0,0,0), P(0,0,2), P(0,0,4), P(0,0,6), P(0,1,0), P(0,1,2), P(0,1,4), P(0,1,6),
-};
+#define Dl(n) (96-n)
+#define Cl(n) (96-n+48)
 
-const struct pinloc row_D[] = {
-/*0*/	P(5,0,1), P(5,0,3), P(5,0,5), P(5,0,7), P(5,1,1), P(5,1,3), P(5,1,5), P(5,1,7),
-/*8*/	P(4,0,1), P(4,0,3), P(4,0,5), P(4,0,7), P(4,1,1), P(4,1,3), P(4,1,5), P(4,1,7),
-/*16*/	P(3,0,1), P(3,0,3), P(3,0,5), P(3,0,7), P(3,1,1), P(3,1,3), P(3,1,5), P(3,1,7),
-/*24*/	P(2,0,1), P(2,0,3), P(2,0,5), P(2,0,7), P(2,1,1), P(2,1,3), P(2,1,5), P(2,1,7),
-/*32*/	P(1,0,1), P(1,0,3), P(1,0,5), P(1,0,7), P(1,1,1), P(1,1,3), P(1,1,5), P(1,1,7),
-/*40*/	P(0,0,1), P(0,0,3), P(0,0,5), P(0,0,7), P(0,1,1), P(0,1,3), P(0,1,5), P(0,1,7),
-/*48*/	P(5,0,1), P(5,0,3), P(5,0,5), P(5,0,7), P(5,1,1), P(5,1,3), P(5,1,5), P(5,1,7),
-/*56*/	P(4,0,1), P(4,0,3), P(4,0,5), P(4,0,7), P(4,1,1), P(4,1,3), P(4,1,5), P(4,1,7),
-/*64*/	P(3,0,1), P(3,0,3), P(3,0,5), P(3,0,7), P(3,1,1), P(3,1,3), P(3,1,5), P(3,1,7),
-/*72*/	P(2,0,1), P(2,0,3), P(2,0,5), P(2,0,7), P(2,1,1), P(2,1,3), P(2,1,5), P(2,1,7),
-/*80*/	P(1,0,1), P(1,0,3), P(1,0,5), P(1,0,7), P(1,1,1), P(1,1,3), P(1,1,5), P(1,1,7),
-/*88*/	P(0,0,1), P(0,0,3), P(0,0,5), P(0,0,7), P(0,1,1), P(0,1,3), P(0,1,5), P(0,1,7),
-};
+const struct signal PX[] = {
+	{"P0",	Dl(52), NULL, POS},
+	{"P1",	Dl(53), NULL, POS},
+	{"P2",	Dl(50), NULL, POS},
+	{"P3",	Cl(70), NULL, POS},
+	{"P4",	Dl(51), NULL, POS},
+	{"P5",	Dl(54), NULL, POS},
+	{"I1",	Dl(57), NULL, POS},
+	{"I2",	Dl(55), NULL, POS},
+	{"I3",	Cl(50), NULL, POS},
+	{"I4",	Cl(51), NULL, POS},
+	{"I5",	Cl(52), NULL, POS},
+	{"K1",	Cl(56), NULL, POS},
+	{"K2",	Cl(87), NULL, POS},
+	{"WW",	Cl(58), NULL, POS},
+	{"WM",	Dl(56), NULL, POS},
+	{"WP",	Dl(68), NULL, POS},
+	{"WA",	Dl(69), NULL, POS},
+	{"WZ",	Cl(71), NULL, POS},
+	{"WX",	Cl(72), NULL, POS},
+	{"WE",	Cl(73), NULL, POS},
+	{"WR",	Cl(88), NULL, POS},
+	{"W&",	Dl(87), NULL, POS},
 
-#define D(n) (row_D+n-1)
-#define C(n) (row_C+n-1)
+	{"S1",	Dl(88), NULL, POS},
 
-const __flash struct signal PX[] = {
-	{"P0",	D(52), NULL, POS},
-	{"P1",	D(53), NULL, POS},
-	{"P2",	D(50), NULL, POS},
-	{"P3",	C(70), NULL, POS},
-	{"P4",	D(51), NULL, POS},
-	{"P5",	D(54), NULL, POS},
+	{"ZGI",	Cl(69), NULL, NEG},
+	{"ZW1",	Dl(91), NULL, NEG},
 
-	{"I1",	D(57), NULL, POS},
-	{"I2",	D(55), NULL, POS},
-	{"I3",	C(50), NULL, POS},
-	{"I4",	C(51), NULL, POS},
-	{"I5",	C(52), NULL, POS},
+	{"DIN",	Cl(55), NULL, NEG},
+//	{"DMCL",Cl(53), NULL, NEG}, // przepuszczone przez pakiet do plateru?
+	{"DR",	Cl(74), NULL, NEG},
+	{"DW",	Cl(75), NULL, NEG},
+	{"DF",	Cl(76), NULL, NEG},
 
-	{"K1",	C(56), NULL, POS},
-	{"K2",	C(87), NULL, POS},
+	{"REN",	Cl(91), NULL, NEG},
+	{"ROK",	Cl(92), NULL, NEG},
+	{"RPE",	Cl(93), NULL, NEG},
 
-	{"WW",	C(58), NULL, POS},
-	{"WM",	D(56), NULL, POS},
-	{"WP",	D(68), NULL, POS},
-	{"WA",	D(69), NULL, POS},
-	{"WZ",	C(71), NULL, POS},
-	{"WX",	C(72), NULL, POS},
-	{"WE",	C(73), NULL, POS},
-	{"WR",	C(88), NULL, POS},
-	{"W&",	D(87), NULL, POS},
-
-	{"S1",	D(88), NULL, POS},
-	{"OK*",	C(57), NULL, POS},
-	{"ZW1",	D(91), NULL, NEG},
-	{"ZGI",	C(69), NULL, NEG},
-	{"H*N",	C(94), NULL, NEG},
-
-	{"DIN",	C(55), NULL, NEG},
-	{"DMCL",C(52), NULL, NEG},
-	{"DR",	C(74), NULL, NEG},
-	{"DW",	C(75), NULL, NEG},
-	{"DF",	C(76), NULL, NEG},
-	{"REN",	C(91), NULL, NEG},
-	{"ROK",	C(92), NULL, NEG},
-	{"RPE",	C(93), NULL, NEG},
+	{"OK*",	Cl(57), NULL, POS},
+	{"H*N",	Cl(94), NULL, NEG},
 	{NULL}
 };
 
-const struct pinloc *LG[] = { D(23), D(24), D(22), NULL };
-const struct pinloc *LK[] = { C(27), C(21), C(24), C(25), NULL };
-const __flash struct signal PM[] = {
-	{"LG",		NULL, LG, POS},
-	{"LK",		NULL, LK, POS},
+const int8_t LG[] = { Dr(23), Dr(24), Dr(22), -1 };
+const int8_t LK[] = { Cr(27), Cr(21), Cr(24), Cr(25), -1 };
+const struct signal PM[] = {
+	{"LG",		-1, LG, POS},
+	{"LK",		-1, LK, POS},
 
-	{"WLS",		D(21), NULL, POS},
-	{"CYCLE",	C(39), NULL, POS},
-	{"WAIT",	C(40), NULL, POS},
-	{"START",	C(41), NULL, POS},
-	{"PRZERW",	C(42), NULL, POS},
-	{"LOAD",	C(43), NULL, POS},
-	{"STORE",	C(44), NULL, POS},
-	{"FETCH",	C(45), NULL, POS},
-	{"BIN",		C(46), NULL, POS},
-	{"PR",		D(44), NULL, POS},
-	{"WB",		D(45), NULL, POS},
-	{"WP",		D(46), NULL, POS},
-	{"WM",		D(47), NULL, POS},
-	{"PB",		D(48), NULL, POS},
+	{"WLS",		Dr(21), NULL, POS},
+	{"CYCLE",	Cr(39), NULL, POS},
+	{"WAIT",	Cr(40), NULL, POS},
+	{"START",	Cr(41), NULL, POS},
+	{"PRZERW",	Cr(42), NULL, POS},
+	{"LOAD",	Cr(43), NULL, POS},
+	{"STORE",	Cr(44), NULL, POS},
+	{"FETCH",	Cr(45), NULL, POS},
+	{"BIN",		Cr(46), NULL, POS},
+	{"PR",		Dr(44), NULL, POS},
+	{"WB",		Dr(45), NULL, POS},
+	{"WP",		Dr(46), NULL, POS},
+	{"WM",		Dr(47), NULL, POS},
+	{"PB",		Dr(48), NULL, POS},
 	{NULL}
 };
 
-const struct pinloc *NPA[] = { D(8), D(9), D(7), D(10), NULL };
-const struct pinloc *NPB[] = { D(25), D(26), D(28), D(27), NULL };
-const struct pinloc *RS[] = { C(5), C(9), C(6), C(8), C(7), C(2), C(4), C(3), D(8), C(10), NULL };
-const __flash struct signal PP[] = {
-	{ "NPA", NULL, NPA, POS },
-	{ "NPB", NULL, NPB, POS },
-	{ "RS", NULL, RS, POS },
+const int8_t NPA[] = { Dr(8), Dr(9), Dr(7), Dr(10), -1 };
+const int8_t NPB[] = { Dr(25), Dr(26), Dr(28), Dr(27), -1 };
+const int8_t RS[] = { Cr(5), Cr(9), Cr(6), Cr(8), Cr(7), Cr(2), Cr(4), Cr(3), Dr(8), Cr(10), -1 };
+const struct signal PP[] = {
+	{ "NPA", -1, NPA, POS },
+	{ "NPB", -1, NPB, POS },
+	{ "RS", -1, RS, POS },
 	{NULL}
 };
 
-const struct pinloc *DNB[] = { D(40), D(41), D(42), D(43), NULL };
-const struct pinloc *R[] = { C(47), C(46), C(48), NULL };
-const struct pinloc *KI[] = { D(45), D(44), NULL };
-const __flash struct signal PR[] = {
-	{ "DNB", NULL, DNB, POS },
-	{ "BLR", C(41), NULL, NEG },
-	{ "W>R", C(43), NULL, NEG },
-	{ "R", NULL, R, POS },
-	{ "KI", NULL, KI, POS },
-	{ "DQB", D(46), NULL, NEG },
-	{ "DPN", D(48), NULL, NEG },
+const int8_t DNB[] = { Dr(40), Dr(41), Dr(42), Dr(43), -1 };
+const int8_t R[] = { Cr(47), Cr(46), Cr(48), -1 };
+const int8_t KI[] = { Dr(45), Dr(44), -1 };
+const struct signal PR[] = {
+	{ "DNB", -1, DNB, POS },
+	{ "BLR", Cr(41), NULL, NEG },
+	{ "W>R", Cr(43), NULL, NEG },
+	{ "R", -1, R, POS },
+	{ "KI", -1, KI, POS },
+	{ "DQB", Dr(46), NULL, NEG },
+	{ "DPN", Dr(48), NULL, NEG },
 	{NULL}
 };
 
-const __flash struct signal PA[] = {
-	{ "W>AC", C(50), NULL, POS },
-	{ "W>IC", C(51), NULL, POS },
-	{ "W>DT", D(52), NULL, NEG },
-	{ "W>AR", C(53), NULL, POS },
-	{ "AR>AD", D(55), NULL, NEG },
+const struct signal PA[] = {
+	{ "W>AC", Cl(50), NULL, POS },
+	{ "W>IC", Cl(51), NULL, POS },
+	{ "W>DT", Dl(52), NULL, NEG },
+	{ "W>AR", Cl(53), NULL, POS },
+	{ "AR>AD", Dl(55), NULL, NEG },
 
-	{ "ICP1", C(52), NULL, POS },
-	{ "SAB", C(54), NULL, NEG },
-	{ "SCB", C(55), NULL, NEG },
-	{ "BWB", C(56), NULL, NEG },
-	{ "SD", C(57), NULL, NEG },
-	{ "$-1", D(51), NULL, POS },
-	{ "CARRY", D(53), NULL, NEG },
-	{ "AS2", D(54), NULL, POS },
+	{ "ICP1", Cl(52), NULL, POS },
+	{ "SAB", Cl(54), NULL, NEG },
+	{ "SCB", Cl(55), NULL, NEG },
+	{ "BWB", Cl(56), NULL, NEG },
+	{ "SD", Cl(57), NULL, NEG },
+	{ "$-1", Dl(51), NULL, POS },
+	{ "CARRY", Dl(53), NULL, NEG },
+	{ "AS2", Dl(54), NULL, POS },
 	{NULL}
 };
 
-const struct pinloc *FD[] = { C(21), C(22), C(23), C(24), C(39), C(40), C(41), C(42), NULL };
-const struct pinloc *FIC1[] = { C(44), C(45), C(46), C(47), NULL };
-const __flash struct signal FPAR[] = {
-	{ "D", NULL, FD, POS },
-	{ "FIC1", NULL, FIC1, POS },
-	{ "SGN", D(21), NULL, POS },
-	{ "WT", C(25), NULL, POS },
-	{ "WDT", C(26), NULL, POS },
-	{ "D-1", C(27), NULL, POS },
-	{ "D-2", C(28), NULL, POS },
-	{ "CK", C(29), NULL, POS },
-	{ "PM", C(43), NULL, POS },
-	{ "WC", C(48), NULL, POS },
+const int8_t FD[] = { Cr(21), Cr(22), Cr(23), Cr(24), Cr(39), Cr(40), Cr(41), Cr(42), -1 };
+const int8_t FIC1[] = { Cr(44), Cr(45), Cr(46), Cr(47), -1 };
+const struct signal FPAR[] = {
+	{ "D", -1, FD, POS },
+	{ "FIC1", -1, FIC1, POS },
+	{ "SGN", Dr(21), NULL, POS },
+	{ "WT", Cr(25), NULL, POS },
+	{ "WDT", Cr(26), NULL, POS },
+	{ "D-1", Cr(27), NULL, POS },
+	{ "D-2", Cr(28), NULL, POS },
+	{ "CK", Cr(29), NULL, POS },
+	{ "PM", Cr(43), NULL, POS },
+	{ "WC", Cr(48), NULL, POS },
 	{NULL}
 };
 
-const struct pinloc *FIC2[] = { C(51), C(50), NULL };
-const __flash struct signal FPAL[] = {
-	{ "G", C(49), NULL, POS },
-	{ "FIC2", NULL, FIC2, POS },
-	{ "DI", C(52), NULL, POS },
-	{ "IDI", C(53), NULL, POS },
-	{ "M-1", C(54), NULL, POS },
-	{ "D&", C(55), NULL, POS },
-	{ "END", C(56), NULL, POS },
-	{ "WS", C(57), NULL, POS },
-	{ "CI", C(58), NULL, POS },
-	{ "FWZ", D(57), NULL, POS },
-	{ "T-1", D(58), NULL, POS },
+const int8_t FIC2[] = { Cl(51), Cl(50), -1 };
+const struct signal FPAL[] = {
+	{ "G", Cl(49), NULL, POS },
+	{ "FIC2", -1, FIC2, POS },
+	{ "DI", Cl(52), NULL, POS },
+	{ "IDI", Cl(53), NULL, POS },
+	{ "M-1", Cl(54), NULL, POS },
+	{ "D&", Cl(55), NULL, POS },
+	{ "END", Cl(56), NULL, POS },
+	{ "WS", Cl(57), NULL, POS },
+	{ "CI", Cl(58), NULL, POS },
+	{ "FWZ", Dl(57), NULL, POS },
+	{ "T-1", Dl(58), NULL, POS },
 	{NULL}
 };
 
-const struct pinloc *T1[] = { D(7), D(6), C(2), D(4), C(4), D(7), C(8), C(9), C(21), C(10), C(22), C(20), C(23), C(25), C(26), C(24), C(27), C(41), C(29), C(39), C(42), C(44), C(28), C(40), C(47), C(48), NULL };
-const __flash struct signal FPMR[] = {
-	{ "T1", NULL, T1, POS},
-	{ "TAB", C(1), NULL, NEG },
-	{ "TAA", D(1), NULL, NEG },
-	{ "CLKTA", D(2), NULL, NEG },
-	{ "M0", C(3), NULL, POS },
-	{ "FP0", D(3), NULL, POS },
-	{ "CLKM", C(5), NULL, NEG },
-	{ "FAB", D(5), NULL, POS },
-	{ "FC0", D(6), NULL, NEG },
-	{ "C1", D(8), NULL, POS },
-	{ "MA", D(9), NULL, NEG },
-	{ "M15", D(10), NULL, POS },
-	{ "M14", D(20), NULL, POS },
-	{ "P*16", D(21), NULL, NEG },
-	{ "CP", D(22), NULL, POS },
-	{ "FRB", D(23), NULL, POS },
-	{ "FRA1", D(24), NULL, POS },
-	{ "M*32", C(33), NULL, POS },
-	{ "P*32", D(37), NULL, NEG },
-	{ "FAA", C(43), NULL, NEG },
-	{ "CLKTB", C(45), NULL, NEG },
-	{ "TRB", C(46), NULL, NEG },
+const int8_t T1[] = { Dr(7), Dr(6), Cr(2), Dr(4), Cr(4), Dr(7), Cr(8), Cr(9), Cr(21), Cr(10), Cr(22), Cr(20), Cr(23), Cr(25), Cr(26), Cr(24), Cr(27), Cr(41), Cr(29), Cr(39), Cr(42), Cr(44), Cr(28), Cr(40), Cr(47), Cr(48), -1 };
+const struct signal FPMR[] = {
+	{ "T1", -1, T1, POS},
+	{ "TAB", Cr(1), NULL, NEG },
+	{ "TAA", Dr(1), NULL, NEG },
+	{ "CLKTA", Dr(2), NULL, NEG },
+	{ "M0", Cr(3), NULL, POS },
+	{ "FP0", Dr(3), NULL, POS },
+	{ "CLKM", Cr(5), NULL, NEG },
+	{ "FAB", Dr(5), NULL, POS },
+	{ "FC0", Dr(6), NULL, NEG },
+	{ "C1", Dr(8), NULL, POS },
+	{ "MA", Dr(9), NULL, NEG },
+	{ "M15", Dr(10), NULL, POS },
+	{ "M14", Dr(20), NULL, POS },
+	{ "P*16", Dr(21), NULL, NEG },
+	{ "CP", Dr(22), NULL, POS },
+	{ "FRB", Dr(23), NULL, POS },
+	{ "FRA1", Dr(24), NULL, POS },
+	{ "M*32", Cr(33), NULL, POS },
+	{ "P*32", Dr(37), NULL, NEG },
+	{ "FAA", Cr(43), NULL, NEG },
+	{ "CLKTB", Cr(45), NULL, NEG },
+	{ "TRB", Cr(46), NULL, NEG },
 	{NULL}
 };
 
-const struct pinloc *T2[] = { C(49), C(50), C(58), C(53), C(52), C(54), C(68), C(69), C(70), C(72), C(89), C(88), C(86), C(71), NULL };
-const __flash struct signal FPML[] = {
-	{ "T2", NULL, T2, POS},
-	{ "0>M", C(55), NULL, NEG },
-	{ "F9KA", C(56), NULL, POS },
-	{ "LKB", C(57), NULL, POS },
-	{ "T>C", C(73), NULL, POS },
-	{ "MB", C(74), NULL, NEG },
-	{ "M*40", C(75), NULL, POS },
-	{ "M39", C(76), NULL, POS },
-	{ "M38", C(87), NULL, POS },
-	{ "CLKTC", C(90), NULL, POS },
-	{ "P*40", C(92), NULL, NEG },
+const int8_t T2[] = { Cl(49), Cl(50), Cl(58), Cl(53), Cl(52), Cl(54), Cl(68), Cl(69), Cl(70), Cl(72), Cl(89), Cl(88), Cl(86), Cl(71), -1 };
+const struct signal FPML[] = {
+	{ "T2", -1, T2, POS},
+	{ "0>M", Cl(55), NULL, NEG },
+	{ "F9KA", Cl(56), NULL, POS },
+	{ "LKB", Cl(57), NULL, POS },
+	{ "T>C", Cl(73), NULL, POS },
+	{ "MB", Cl(74), NULL, NEG },
+	{ "M*40", Cl(75), NULL, POS },
+	{ "M39", Cl(76), NULL, POS },
+	{ "M38", Cl(87), NULL, POS },
+	{ "CLKTC", Cl(90), NULL, POS },
+	{ "P*40", Cl(92), NULL, NEG },
 	{NULL}
 };
 
-const __flash struct signal FPS[] = {
-	{ "F1", C(73), NULL, POS },
-	{ "F2", C(74), NULL, POS },
-	{ "F3", C(72), NULL, POS },
-	{ "F4", C(75), NULL, POS },
-	{ "F5", C(94), NULL, POS },
-	{ "F6", C(76), NULL, POS },
-	{ "F7", C(93), NULL, POS },
-	{ "F8", C(92), NULL, POS },
-	{ "F10", C(88), NULL, POS },
-	{ "F11", C(69), NULL, POS },
-	{ "F12", C(70), NULL, POS },
-	{ "F13", C(91), NULL, POS },
+const int8_t LP[] = { Cl(89), Cl(90), -1 };
+const struct signal FPS[] = {
+	{ "F1", Cl(73), NULL, POS },
+	{ "F2", Cl(74), NULL, POS },
+	{ "F3", Cl(72), NULL, POS },
+	{ "F4", Cl(75), NULL, POS },
+	{ "F5", Cl(94), NULL, POS },
+	{ "F6", Cl(76), NULL, POS },
+	{ "F7", Cl(93), NULL, POS },
+	{ "F8", Cl(92), NULL, POS },
+	{ "F10", Cl(88), NULL, POS },
+	{ "F11", Cl(69), NULL, POS },
+	{ "F12", Cl(70), NULL, POS },
+	{ "F13", Cl(91), NULL, POS },
 
-	{ "S1", C(71), NULL, POS },
-	{ "LPB", C(89), NULL, POS },
-	{ "LPA", C(90), NULL, POS },
+	{ "S1", Cl(71), NULL, POS },
+	{ "LP", -1, LP, DEC },
 	{NULL}
 };
 

@@ -66,6 +66,8 @@ void lcd_clear(void);
 void lcd_home(void);
 void lcd_cg_set(const uint8_t ch, const __flash uint8_t *chdata);
 void lcd_init(void);
+uint8_t lcd_get_x();
+uint8_t lcd_get_y();
 
 #endif
 

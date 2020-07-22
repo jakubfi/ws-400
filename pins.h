@@ -3,31 +3,29 @@
 
 #include <inttypes.h>
 
-#define POS 0
-#define NEG 1
-
-struct pinloc {
-	const uint8_t ic_addr;
-	const uint8_t bit;
-} pinloc;
+enum disp_attrs {
+	POS = 0,
+	NEG,
+	BIN, DEC, HEX
+};
 
 struct signal {
 	const char *name;
-	const struct pinloc *loc;
-	const struct pinloc **reg;
+	const int8_t loc;
+	const int8_t *reg;
 	const uint8_t polarity;
 } signal;
 
-extern const __flash struct signal PX[];
-extern const __flash struct signal PM[];
-extern const __flash struct signal PP[];
-extern const __flash struct signal PR[];
-extern const __flash struct signal PA[];
-extern const __flash struct signal FPAR[];
-extern const __flash struct signal FPAL[];
-extern const __flash struct signal FPMR[];
-extern const __flash struct signal FPML[];
-extern const __flash struct signal FPS[];
+extern const struct signal PX[];
+extern const struct signal PM[];
+extern const struct signal PP[];
+extern const struct signal PR[];
+extern const struct signal PA[];
+extern const struct signal FPAR[];
+extern const struct signal FPAL[];
+extern const struct signal FPMR[];
+extern const struct signal FPML[];
+extern const struct signal FPS[];
 
 #endif
 

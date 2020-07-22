@@ -3,22 +3,13 @@
 
 #include <inttypes.h>
 
-extern __flash const uint8_t d0000[];
-extern __flash const uint8_t d0001[];
-extern __flash const uint8_t d0100[];
-extern __flash const uint8_t d0101[];
-extern __flash const uint8_t d0010[];
-extern __flash const uint8_t d0011[];
-extern __flash const uint8_t d0110[];
-extern __flash const uint8_t d0111[];
-extern __flash const uint8_t d1000[];
-extern __flash const uint8_t d1001[];
-extern __flash const uint8_t d1100[];
-extern __flash const uint8_t d1101[];
-extern __flash const uint8_t d1010[];
-extern __flash const uint8_t d1011[];
-extern __flash const uint8_t d1110[];
-extern __flash const uint8_t d1111[];
+#define CH_CURSOR 1
+#define CH_HDOT 2
+#define CH_VDOT 3
+
+extern __flash const uint8_t cursor[];
+extern __flash const uint8_t hdot[];
+extern __flash const uint8_t vdot[];
 
 #endif
 
