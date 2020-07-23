@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <string.h>
 #include <avr/io.h>
 #include <util/delay.h>
 #include "hd44780.h"
@@ -17,63 +19,175 @@
 
 MCP23017 dev[6];
 uint8_t bus[96];
+char screen[32];
+uint8_t sx, sy;
 
 #define A 0
 #define B 1
 #define CONN(row, col) bus[row*48+col]
 
 // -----------------------------------------------------------------------
-void read_state()
+void scr_clr()
+{
+	for (uint8_t i=0 ; i<32 ; i++) screen[i] = ' ';
+	sx = sy = 0;
+}
+
+// -----------------------------------------------------------------------
+void scr_blit()
+{
+	uint8_t i;
+	lcd_setpos(0, 0);
+	for (i=0 ; i<16 ; i++) lcd_write_data(screen[i]);
+	lcd_setpos(0, 1);
+	for (i=16 ; i<32 ; i++) lcd_write_data(screen[i]);
+}
+
+// -----------------------------------------------------------------------
+#define scr_setpos(x, y) sx = x; sy = y
+
+// -----------------------------------------------------------------------
+#define scr_put_at(x, y, c) screen[((y)<<4)+(x)] = c
+
+// -----------------------------------------------------------------------
+void scr_print(const char *str)
+{
+	while(*str) {
+		scr_put_at(sx++, sy, *str++);
+		if (sx >= LCD_COLS) {
+			sy++;
+			sx = 0;
+		}
+		if (sy >= LCD_LINES) {
+			sy = 0;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------
+uint8_t read_state()
 {
 	uint8_t pos = 0;
+	static uint16_t tmp[6];
+
+	uint8_t io_change = 0;
 
 	for (uint8_t i=0 ; i<6 ; i++) {
 		uint16_t io;
 		io = mcp23017_read_register(dev+i, MCP23017_GPIOA);
 		io |= mcp23017_read_register(dev+i, MCP23017_GPIOB) << 8;
+		if (~io_change && (io != tmp[i])) {
+			io_change = 1;
+		}
+		tmp[i] = io;
 		for (int8_t b=15 ; b>=0 ; b--) {
 			uint8_t loc = 48*(pos&1) + (pos>>1);
 			bus[loc] = (io >> b) & 1;
 			pos++;
 		}
 	}
+//	bus[Cr(27)] = 1;
+//	bus[Cr(21)] = 0;
+//	bus[Cr(24)] = 1;
+//	bus[Cr(25)] = 0;
+	return io_change;
 }
 
 // -----------------------------------------------------------------------
-void print_raw()
+void print_raw(uint8_t pos)
 {
-	char buf[11];
-	buf[10] = '\0';
+	uint8_t xpos;
+
+	uint8_t count = pos==4 ? 8 : 10;
+	uint8_t start = 10*pos;
+	uint8_t end = 10*pos + count;
+
+	scr_clr();
+	scr_put_at(10, 0, CH_VDOT);
+	scr_put_at(10, 1, CH_VDOT);
+
 	for (uint8_t y=0 ; y<2 ; y++) {
-		for (uint8_t x=0 ; x<10 ; x++) {
-			buf[x] = '0' + CONN(y, x);
+		xpos = pos==4 ? 2 : 0;
+		for (uint8_t x=start ; x<end ; x++) {
+			scr_put_at(xpos, y, '0' + CONN(y, x));
+			xpos++;
 		}
-		lcd_setpos(0, y);
-		lcd_print(buf);
 	}
+
+	scr_blit();
 }
 
 // -----------------------------------------------------------------------
-void print_state(const struct signal *s)
+char * decimalize(const __flash struct signal *s, char *tmp)
 {
-	char empty[] = "                ";
-	lcd_setpos(0, 0);
-	while (s->name) {
-		if (((s->polarity == POS) && bus[s->loc]) || ((s->polarity == NEG) && !bus[s->loc])) {
-			lcd_print(s->name);
-			if (lcd_get_x() != 0) {
-				lcd_print(" ");
-			}
+	int8_t *x = (int8_t*) s->reg;
+	uint16_t val = 0;
+	while (*x != -1) {
+		val <<= 1;
+		if (bus[*x]) val |= 1;
+		x++;
+	}
+	sprintf(tmp, "%s=%d", s->name, val);
+	return tmp;
+}
+
+// -----------------------------------------------------------------------
+int smart_print(char *str)
+{
+	if (!str) return 0;
+
+	uint8_t len = strlen(str);
+	if (sx+len > LCD_COLS-sy) { // -sy to make space for CH_CONT at line 1
+		if (sy >= 1) {
+			scr_put_at(15, 1, CH_CONT);
+			return 1;
+		} else {
+			scr_setpos(0, 1);
 		}
-		s++;
 	}
-	if (lcd_get_x() < 16) {
-		lcd_puts(empty, 16-lcd_get_x());
+
+	scr_print(str);
+	if ((sx > 0) && (sx < LCD_COLS)) {
+		scr_print(" ");
 	}
-	if (lcd_get_y() == 0) {
-		lcd_setpos(0, 1);
-		lcd_puts(empty, 16);
+	return 0;
+}
+
+// -----------------------------------------------------------------------
+const struct signal * print_state(const __flash struct signal *s)
+{
+	char *str;
+	char tmp[10];
+	uint8_t no_fit = 0;
+
+	scr_clr();
+
+	while (s->name) {
+		str = NULL;
+		switch (s->polarity) {
+			case POS:
+				if (bus[s->loc]) str = (char *) s->name;
+				break;
+			case NEG:
+				if (!bus[s->loc]) str = (char *) s->name;
+				break;
+			case DEC:
+				str = decimalize(s, tmp);
+				break;
+		}
+		no_fit = smart_print(str);
+		if (no_fit) {
+			break;
+		} else {
+			s++;
+		}
 	}
+
+	if (!s->name) s = NULL;
+
+	scr_blit();
+
+	return s;
 }
 
 uint8_t CONN_COUNT = 10;
@@ -102,18 +216,17 @@ void menu_update(uint8_t pos)
 	};
 
 	uint8_t start_p = 4*(pos / 4);
-	uint8_t end_p = start_p*4 + 4;
+	uint8_t end_p = start_p + 4;
 
-	lcd_setpos(0, 0);
+	scr_clr();
 	for (uint8_t i=start_p ; i<end_p ; i++) {
-		lcd_print(conns[i]);
+		scr_print(conns[i]);
 	}
 
 	uint8_t cpos = pos % 4;
 
-	lcd_setpos(8*(cpos%2), cpos/2);
-	lcd_write_data(CH_CURSOR);
-
+	scr_put_at(8*(cpos%2), cpos/2, CH_CURSOR);
+	scr_blit();
 }
 
 // -----------------------------------------------------------------------
@@ -169,14 +282,15 @@ int main(void) {
 		mcp23017_write_register(dev+i, MCP23017_IODIRB, 0xff);
 		mcp23017_write_register(dev+i, MCP23017_IPOLA, 0);
 		mcp23017_write_register(dev+i, MCP23017_IPOLB, 0);
-		mcp23017_write_register(dev+i, MCP23017_GPPUA, 0);
-		mcp23017_write_register(dev+i, MCP23017_GPPUB, 0);
+		mcp23017_write_register(dev+i, MCP23017_GPPUA, 0xff);
+		mcp23017_write_register(dev+i, MCP23017_GPPUB, 0xff);
 	}
 
 	lcd_init();
 	lcd_cg_set(CH_CURSOR, cursor);
 	lcd_cg_set(CH_HDOT, hdot);
 	lcd_cg_set(CH_VDOT, vdot);
+	lcd_cg_set(CH_CONT, cont);
 	lcd_clear();
 	lcd_home();
 
@@ -186,13 +300,49 @@ int main(void) {
 	   	conn = select();
 	}
 
-	lcd_clear();
+	scr_clr();
 
+	uint8_t raw = 0;
+	uint8_t raw_pos = 0;
+	const __flash struct signal *start_signal = conn;
+	const __flash struct signal *next_signal = NULL;
+
+	uint8_t sel=1, psel;
+	uint8_t ok=1, pok;
 	while (1) {
-		read_state();
-//		print_raw();
-		print_state(conn);
-//		_delay_ms(200);
+		uint8_t ch = read_state();
+
+//		if (ch) start_signal = conn;
+
+		psel = sel;
+		sel = SW_PIN & SW_SEL;
+		if (!sel && psel) {
+			if (raw) {
+				if (raw_pos<4) {
+					raw_pos++;
+				} else {
+					raw_pos = 0;
+				}
+			} else {
+				if (next_signal) start_signal = next_signal;
+				else start_signal = conn;
+			}
+			_delay_ms(150);
+		}
+
+		pok = ok;
+		ok = SW_PIN & SW_OK;
+		if (!ok && pok) {
+			raw = ~raw;
+			start_signal = conn;
+			raw_pos = 0;
+			_delay_ms(150);
+		}
+		if (raw) {
+			print_raw(raw_pos);
+		} else {
+			next_signal = print_state(start_signal);
+		}
 	}
 }
 

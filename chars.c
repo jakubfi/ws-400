@@ -33,4 +33,15 @@ const __flash uint8_t vdot[] = {
 	0b00000,
 };
 
+const __flash uint8_t cont[] = {
+	0b00000,
+	0b11100,
+	0b01110,
+	0b00111,
+	0b01110,
+	0b11100,
+	0b00000,
+	0b00000,
+};
+
 // vim: tabstop=4 shiftwidth=4 autoindent

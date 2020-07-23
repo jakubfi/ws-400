@@ -3,6 +3,9 @@
 
 #include <avr/io.h>
 
+#define LCD_COLS 16
+#define LCD_LINES 2
+
 // --- port setup --------------------------------------------------------
 
 #define LCD_RS_DIR	DDRB
@@ -60,7 +63,7 @@ void lcd_write_cmd(const uint8_t cmd);
 void lcd_write_data(const uint8_t data);
 unsigned char lcd_read_data(void);
 void lcd_puts(const char *str, int8_t len);
-uint8_t lcd_print(const char *);
+void lcd_print(const char *);
 void lcd_setpos(const uint8_t x, const uint8_t y);
 void lcd_clear(void);
 void lcd_home(void);

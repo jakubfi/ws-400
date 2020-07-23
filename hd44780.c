@@ -5,8 +5,6 @@
 
 static uint8_t px = 0;
 static uint8_t py = 0;
-static const uint8_t COLS = 16;
-static const uint8_t LINES = 2;
 
 // -----------------------------------------------------------------------
 static uint8_t lcd_read()
@@ -77,28 +75,22 @@ void lcd_puts(const char *str, int8_t len)
 		lcd_write_data(*str);
 		str++;
 		len--;
-	} while (len>=0);
+	} while (len>0);
 }
 
-
 // -----------------------------------------------------------------------
-uint8_t lcd_print(const char *str)
+void lcd_print(const char *str)
 {
-	uint8_t len = strlen(str);
-	if (px+len > COLS) {
-		py++;
-		px = 0;
-	}
-	if (py > LINES-1) {
-		return 1;
-	}
-	lcd_setpos(px, py);
 	while(*str) {
 		lcd_write_data(*str);
 		str++;
+		px++;
+		if (px >= LCD_COLS) {
+			py++;
+			px = 0;
+			lcd_setpos(px, py);
+		}
 	}
-	px += len;
-	return 0;
 }
 
 // -----------------------------------------------------------------------

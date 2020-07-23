@@ -2,13 +2,7 @@
 #include <stddef.h>
 #include "pins.h"
 
-#define Dr(n) (48-n)
-#define Cr(n) (48-n+48)
-
-#define Dl(n) (96-n)
-#define Cl(n) (96-n+48)
-
-const struct signal PX[] = {
+const __flash struct signal PX[] = {
 	{"P0",	Dl(52), NULL, POS},
 	{"P1",	Dl(53), NULL, POS},
 	{"P2",	Dl(50), NULL, POS},
@@ -52,13 +46,12 @@ const struct signal PX[] = {
 	{NULL}
 };
 
-const int8_t LG[] = { Dr(23), Dr(24), Dr(22), -1 };
+const int8_t LG[] = { Dr(22), Dr(24), Dr(23), -1 };
 const int8_t LK[] = { Cr(27), Cr(21), Cr(24), Cr(25), -1 };
-const struct signal PM[] = {
-	{"LG",		-1, LG, POS},
-	{"LK",		-1, LK, POS},
+const __flash struct signal PM[] = {
+	{"LG",		-1, LG, DEC},
+	{"LK",		-1, LK, DEC},
 
-	{"WLS",		Dr(21), NULL, POS},
 	{"CYCLE",	Cr(39), NULL, POS},
 	{"WAIT",	Cr(40), NULL, POS},
 	{"START",	Cr(41), NULL, POS},
@@ -72,34 +65,36 @@ const struct signal PM[] = {
 	{"WP",		Dr(46), NULL, POS},
 	{"WM",		Dr(47), NULL, POS},
 	{"PB",		Dr(48), NULL, POS},
+	{"WLS",		Dr(21), NULL, POS},
+
 	{NULL}
 };
 
 const int8_t NPA[] = { Dr(8), Dr(9), Dr(7), Dr(10), -1 };
 const int8_t NPB[] = { Dr(25), Dr(26), Dr(28), Dr(27), -1 };
 const int8_t RS[] = { Cr(5), Cr(9), Cr(6), Cr(8), Cr(7), Cr(2), Cr(4), Cr(3), Dr(8), Cr(10), -1 };
-const struct signal PP[] = {
-	{ "NPA", -1, NPA, POS },
-	{ "NPB", -1, NPB, POS },
-	{ "RS", -1, RS, POS },
+const __flash struct signal PP[] = {
+	{ "NPA", -1, NPA, DEC },
+	{ "NPB", -1, NPB, DEC },
+	{ "RS", -1, RS, DEC },
 	{NULL}
 };
 
 const int8_t DNB[] = { Dr(40), Dr(41), Dr(42), Dr(43), -1 };
 const int8_t R[] = { Cr(47), Cr(46), Cr(48), -1 };
 const int8_t KI[] = { Dr(45), Dr(44), -1 };
-const struct signal PR[] = {
-	{ "DNB", -1, DNB, POS },
+const __flash struct signal PR[] = {
+	{ "DNB", -1, DNB, DEC },
 	{ "BLR", Cr(41), NULL, NEG },
 	{ "W>R", Cr(43), NULL, NEG },
-	{ "R", -1, R, POS },
-	{ "KI", -1, KI, POS },
+	{ "R", -1, R, DEC },
+	{ "KI", -1, KI, DEC },
 	{ "DQB", Dr(46), NULL, NEG },
 	{ "DPN", Dr(48), NULL, NEG },
 	{NULL}
 };
 
-const struct signal PA[] = {
+const __flash struct signal PA[] = {
 	{ "W>AC", Cl(50), NULL, POS },
 	{ "W>IC", Cl(51), NULL, POS },
 	{ "W>DT", Dl(52), NULL, NEG },
@@ -119,9 +114,9 @@ const struct signal PA[] = {
 
 const int8_t FD[] = { Cr(21), Cr(22), Cr(23), Cr(24), Cr(39), Cr(40), Cr(41), Cr(42), -1 };
 const int8_t FIC1[] = { Cr(44), Cr(45), Cr(46), Cr(47), -1 };
-const struct signal FPAR[] = {
-	{ "D", -1, FD, POS },
-	{ "FIC1", -1, FIC1, POS },
+const __flash struct signal FPAR[] = {
+	{ "D", -1, FD, DEC },
+	{ "FIC1", -1, FIC1, DEC },
 	{ "SGN", Dr(21), NULL, POS },
 	{ "WT", Cr(25), NULL, POS },
 	{ "WDT", Cr(26), NULL, POS },
@@ -134,9 +129,9 @@ const struct signal FPAR[] = {
 };
 
 const int8_t FIC2[] = { Cl(51), Cl(50), -1 };
-const struct signal FPAL[] = {
+const __flash struct signal FPAL[] = {
 	{ "G", Cl(49), NULL, POS },
-	{ "FIC2", -1, FIC2, POS },
+	{ "FIC2", -1, FIC2, DEC },
 	{ "DI", Cl(52), NULL, POS },
 	{ "IDI", Cl(53), NULL, POS },
 	{ "M-1", Cl(54), NULL, POS },
@@ -150,8 +145,8 @@ const struct signal FPAL[] = {
 };
 
 const int8_t T1[] = { Dr(7), Dr(6), Cr(2), Dr(4), Cr(4), Dr(7), Cr(8), Cr(9), Cr(21), Cr(10), Cr(22), Cr(20), Cr(23), Cr(25), Cr(26), Cr(24), Cr(27), Cr(41), Cr(29), Cr(39), Cr(42), Cr(44), Cr(28), Cr(40), Cr(47), Cr(48), -1 };
-const struct signal FPMR[] = {
-	{ "T1", -1, T1, POS},
+const __flash struct signal FPMR[] = {
+	{ "T1", -1, T1, DEC },
 	{ "TAB", Cr(1), NULL, NEG },
 	{ "TAA", Dr(1), NULL, NEG },
 	{ "CLKTA", Dr(2), NULL, NEG },
@@ -177,8 +172,8 @@ const struct signal FPMR[] = {
 };
 
 const int8_t T2[] = { Cl(49), Cl(50), Cl(58), Cl(53), Cl(52), Cl(54), Cl(68), Cl(69), Cl(70), Cl(72), Cl(89), Cl(88), Cl(86), Cl(71), -1 };
-const struct signal FPML[] = {
-	{ "T2", -1, T2, POS},
+const __flash struct signal FPML[] = {
+	{ "T2", -1, T2, DEC },
 	{ "0>M", Cl(55), NULL, NEG },
 	{ "F9KA", Cl(56), NULL, POS },
 	{ "LKB", Cl(57), NULL, POS },
@@ -193,7 +188,7 @@ const struct signal FPML[] = {
 };
 
 const int8_t LP[] = { Cl(89), Cl(90), -1 };
-const struct signal FPS[] = {
+const __flash struct signal FPS[] = {
 	{ "F1", Cl(73), NULL, POS },
 	{ "F2", Cl(74), NULL, POS },
 	{ "F3", Cl(72), NULL, POS },

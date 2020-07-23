@@ -3,6 +3,12 @@
 
 #include <inttypes.h>
 
+#define Dr(n) (48-n)
+#define Cr(n) (48-n+48)
+
+#define Dl(n) (96-n)
+#define Cl(n) (96-n+48)
+
 enum disp_attrs {
 	POS = 0,
 	NEG,
@@ -16,16 +22,16 @@ struct signal {
 	const uint8_t polarity;
 } signal;
 
-extern const struct signal PX[];
-extern const struct signal PM[];
-extern const struct signal PP[];
-extern const struct signal PR[];
-extern const struct signal PA[];
-extern const struct signal FPAR[];
-extern const struct signal FPAL[];
-extern const struct signal FPMR[];
-extern const struct signal FPML[];
-extern const struct signal FPS[];
+extern const __flash struct signal PX[];
+extern const __flash struct signal PM[];
+extern const __flash struct signal PP[];
+extern const __flash struct signal PR[];
+extern const __flash struct signal PA[];
+extern const __flash struct signal FPAR[];
+extern const __flash struct signal FPAL[];
+extern const __flash struct signal FPMR[];
+extern const __flash struct signal FPML[];
+extern const __flash struct signal FPS[];
 
 #endif
 
