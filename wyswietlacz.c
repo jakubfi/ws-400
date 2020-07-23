@@ -126,13 +126,17 @@ void print_raw(uint8_t pos)
 }
 
 // -----------------------------------------------------------------------
-char * decimalize(const __flash struct signal *s, char *tmp)
+char * decimalize(const __flash struct signal *s, char *tmp, uint8_t neg)
 {
 	int8_t *x = (int8_t*) s->reg;
 	uint16_t val = 0;
 	while (*x != -1) {
 		val <<= 1;
-		if (bus[*x]) val |= 1;
+		if (neg) {
+			if (!bus[*x]) val |= 1;
+		} else {
+			if (bus[*x]) val |= 1;
+		}
 		x++;
 	}
 	sprintf(tmp, "%s=%d", s->name, val);
@@ -180,7 +184,10 @@ const struct signal * print_state(const __flash struct signal *s)
 				if (!bus[s->loc]) str = (char *) s->name;
 				break;
 			case DEC:
-				str = decimalize(s, tmp);
+				str = decimalize(s, tmp, 0);
+				break;
+			case DECNEG:
+				str = decimalize(s, tmp, 1);
 				break;
 		}
 		no_fit = smart_print(str);

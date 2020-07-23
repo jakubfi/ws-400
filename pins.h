@@ -12,7 +12,7 @@
 enum disp_attrs {
 	POS = 0,
 	NEG,
-	BIN, DEC, HEX
+	BIN, DEC, DECNEG, HEX
 };
 
 struct signal {

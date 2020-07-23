@@ -87,7 +87,7 @@ const __flash struct signal PR[] = {
 	{ "DNB", -1, DNB, DEC },
 	{ "BLR", Cr(41), NULL, NEG },
 	{ "W>R", Cr(43), NULL, NEG },
-	{ "R", -1, R, DEC },
+	{ "R", -1, R, DECNEG },
 	{ "KI", -1, KI, DEC },
 	{ "DQB", Dr(46), NULL, NEG },
 	{ "DPN", Dr(48), NULL, NEG },
