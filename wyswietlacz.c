@@ -100,11 +100,17 @@ void print_raw(uint8_t pos)
 	uint8_t xpos;
 
 	int8_t count = pos==4 ? 8 : 10;
-	int8_t start = 38-10*pos; // 38, 28, 18, 8, -2
+	int8_t start = 38-10*pos;
 	if (start<0) start = 0;
 	int8_t end = start + count;
 
 	scr_clr();
+	char s[12];
+	sprintf(s, "%d-%d", pos*10+count, pos*10+1);
+	scr_setpos(11, 0);
+	scr_print(" pos");
+	scr_setpos(11, 1);
+	scr_print(s);
 	scr_put_at(10, 0, CH_VDOT);
 	scr_put_at(10, 1, CH_VDOT);
 
@@ -284,8 +290,8 @@ int main(void) {
 		mcp23017_write_register(dev+i, MCP23017_IODIRB, 0xff);
 		mcp23017_write_register(dev+i, MCP23017_IPOLA, 0);
 		mcp23017_write_register(dev+i, MCP23017_IPOLB, 0);
-		mcp23017_write_register(dev+i, MCP23017_GPPUA, 0xff);
-		mcp23017_write_register(dev+i, MCP23017_GPPUB, 0xff);
+		mcp23017_write_register(dev+i, MCP23017_GPPUA, 0);
+		mcp23017_write_register(dev+i, MCP23017_GPPUB, 0);
 	}
 
 	lcd_init();
@@ -337,7 +343,6 @@ int main(void) {
 		if (!ok && pok) {
 			raw = ~raw;
 			start_signal = conn;
-			raw_pos = 0;
 			_delay_ms(150);
 		}
 		if (raw) {
