@@ -24,7 +24,6 @@ uint8_t sx, sy;
 
 #define A 0
 #define B 1
-#define CONN(row, col) bus[row*48+col]
 
 // -----------------------------------------------------------------------
 void scr_clr()
@@ -93,14 +92,17 @@ uint8_t read_state()
 	return io_change;
 }
 
+#define CONN(row, col) bus[row*48+col]
+
 // -----------------------------------------------------------------------
 void print_raw(uint8_t pos)
 {
 	uint8_t xpos;
 
-	uint8_t count = pos==4 ? 8 : 10;
-	uint8_t start = 10*pos;
-	uint8_t end = 10*pos + count;
+	int8_t count = pos==4 ? 8 : 10;
+	int8_t start = 38-10*pos; // 38, 28, 18, 8, -2
+	if (start<0) start = 0;
+	int8_t end = start + count;
 
 	scr_clr();
 	scr_put_at(10, 0, CH_VDOT);
