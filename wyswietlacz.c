@@ -185,14 +185,15 @@ void menu_update(uint8_t pos)
 	uint8_t end_p = start_p + 4;
 
 	scr_clr();
+
 	for (uint8_t i=start_p ; i<end_p ; i++) {
 		scr_print(conns[i]);
 	}
-	scr_blit();
 
 	uint8_t cpos = pos % 4;
-
 	scr_put_at(8*(cpos%2), cpos/2, CH_CURSOR);
+
+	scr_blit();
 }
 
 // -----------------------------------------------------------------------
@@ -282,6 +283,9 @@ int main(void)
 	const __flash struct signal *next_signal = NULL;
 	uint8_t sel=1, psel;
 	uint8_t ok=1, pok;
+
+	// wait for keys depress
+	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
 
 	while (1) {
 		/*uint8_t ch = */
