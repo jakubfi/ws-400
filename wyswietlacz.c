@@ -27,29 +27,26 @@ uint8_t bus[96];
 uint8_t read_state()
 {
 	uint8_t pos = 0;
-	static uint16_t tmp[6];
+	static uint16_t last_data[6];
+	uint8_t data_change = 0;
 
-	uint8_t io_change = 0;
-
+	// 6 ICs to read data from
 	for (uint8_t i=0 ; i<6 ; i++) {
-		uint16_t io;
-		io = mcp23017_read_register(dev+i, MCP23017_GPIOA);
-		io |= mcp23017_read_register(dev+i, MCP23017_GPIOB) << 8;
-		if (~io_change && (io != tmp[i])) {
-			io_change = 1;
-		}
-		tmp[i] = io;
+		uint16_t data;
+		data = mcp23017_read_register(dev+i, MCP23017_GPIOA);
+		data |= mcp23017_read_register(dev+i, MCP23017_GPIOB) << 8;
+		if (!data_change && (data != last_data[i])) data_change = 1;
+		last_data[i] = data;
+
+		// fill bus data
 		for (int8_t b=15 ; b>=0 ; b--) {
 			uint8_t loc = 48*(pos&1) + (pos>>1);
-			bus[loc] = (io >> b) & 1;
+			bus[loc] = (data >> b) & 1;
 			pos++;
 		}
 	}
-//	bus[Cr(27)] = 1;
-//	bus[Cr(21)] = 0;
-//	bus[Cr(24)] = 1;
-//	bus[Cr(25)] = 0;
-	return io_change;
+
+	return data_change;
 }
 
 // -----------------------------------------------------------------------
@@ -65,10 +62,8 @@ void print_raw(uint8_t pos)
 	scr_clr();
 	char s[12];
 	sprintf(s, "%d-%d", pos*10+count, pos*10+1);
-	scr_setpos(11, 0);
-	scr_print(" pos");
-	scr_setpos(11, 1);
-	scr_print(s);
+	scr_print_at(11, 0, " pos");
+	scr_print_at(11, 1, s);
 	scr_put_at(10, 0, CH_VDOT);
 	scr_put_at(10, 1, CH_VDOT);
 
@@ -163,8 +158,6 @@ const struct signal * print_state(const __flash struct signal *s)
 	return s;
 }
 
-uint8_t CONN_COUNT = 10;
-
 // -----------------------------------------------------------------------
 void menu_update(uint8_t pos)
 {
@@ -195,16 +188,17 @@ void menu_update(uint8_t pos)
 	for (uint8_t i=start_p ; i<end_p ; i++) {
 		scr_print(conns[i]);
 	}
+	scr_blit();
 
 	uint8_t cpos = pos % 4;
 
 	scr_put_at(8*(cpos%2), cpos/2, CH_CURSOR);
-	scr_blit();
 }
 
 // -----------------------------------------------------------------------
 const struct signal * select()
 {
+	const uint8_t CONN_COUNT = 10;
 	const struct signal *connections[] = { PX, PM, PP, PR, PA, FPAL, FPAR, FPML, FPMR, FPS };
 
 	uint8_t pos = 0;
@@ -242,13 +236,13 @@ const struct signal * autodetect()
 }
 
 // -----------------------------------------------------------------------
-// ---- MAIN -------------------------------------------------------------
-// -----------------------------------------------------------------------
-int main(void) {
-
+void setup()
+{
+	// setup switches
 	SW_DIR &= ~(SW_SEL|SW_OK);
 	SW_PORT |= (SW_SEL|SW_OK);
 
+	// setup MCP23017
 	for (uint8_t i=0 ; i<6 ; i++) {
 		mcp23017_init(dev+i, i);
 		mcp23017_write_register(dev+i, MCP23017_IODIRA, 0xff);
@@ -259,6 +253,7 @@ int main(void) {
 		mcp23017_write_register(dev+i, MCP23017_GPPUB, 0);
 	}
 
+	// setup LCD
 	lcd_init();
 	lcd_cg_set(CH_CURSOR, cursor);
 	lcd_cg_set(CH_HDOT, hdot);
@@ -266,6 +261,14 @@ int main(void) {
 	lcd_cg_set(CH_CONT, cont);
 	lcd_clear();
 	lcd_home();
+}
+
+// -----------------------------------------------------------------------
+// ---- MAIN -------------------------------------------------------------
+// -----------------------------------------------------------------------
+int main(void)
+{
+	setup();
 
 	const struct signal *conn;
 	conn = autodetect();
@@ -273,19 +276,17 @@ int main(void) {
 	   	conn = select();
 	}
 
-	scr_clr();
-
 	uint8_t raw = 0;
 	uint8_t raw_pos = 0;
 	const __flash struct signal *start_signal = conn;
 	const __flash struct signal *next_signal = NULL;
-
 	uint8_t sel=1, psel;
 	uint8_t ok=1, pok;
-	while (1) {
-		uint8_t ch = read_state();
 
-//		if (ch) start_signal = conn;
+	while (1) {
+		/*uint8_t ch = */
+		read_state();
+		/*if (ch) start_signal = conn;*/
 
 		psel = sel;
 		sel = SW_PIN & SW_SEL;
