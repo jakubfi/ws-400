@@ -2,7 +2,7 @@ MCU=atmega328p
 DEFINES=-DF_CPU=8000000UL
 PROGRAMMER_MCU=atmega328p
 PROJECTNAME=wyswietlacz
-PRJSRC=wyswietlacz.c hd44780.c i2cmaster.S mcp23017.c chars.c pins.c
+PRJSRC=wyswietlacz.c hd44780.c i2cmaster.S mcp23017.c chars.c pins.c scr.c
 INC=
 LIBS=
 OPTLEVEL=s

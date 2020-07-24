@@ -10,6 +10,7 @@
 #include "i2cmaster.h"
 #include "chars.h"
 #include "pins.h"
+#include "scr.h"
 
 #define SW_DIR	DDRC
 #define SW_PORT	PORTC
@@ -17,51 +18,10 @@
 #define SW_SEL	(1 << PC3)
 #define SW_OK	(1 << PC2)
 
+#define CONN(row, col) bus[row*48+col]
+
 MCP23017 dev[6];
 uint8_t bus[96];
-char screen[32];
-uint8_t sx, sy;
-
-#define A 0
-#define B 1
-
-// -----------------------------------------------------------------------
-void scr_clr()
-{
-	for (uint8_t i=0 ; i<32 ; i++) screen[i] = ' ';
-	sx = sy = 0;
-}
-
-// -----------------------------------------------------------------------
-void scr_blit()
-{
-	uint8_t i;
-	lcd_setpos(0, 0);
-	for (i=0 ; i<16 ; i++) lcd_write_data(screen[i]);
-	lcd_setpos(0, 1);
-	for (i=16 ; i<32 ; i++) lcd_write_data(screen[i]);
-}
-
-// -----------------------------------------------------------------------
-#define scr_setpos(x, y) sx = x; sy = y
-
-// -----------------------------------------------------------------------
-#define scr_put_at(x, y, c) screen[((y)<<4)+(x)] = c
-
-// -----------------------------------------------------------------------
-void scr_print(const char *str)
-{
-	while(*str) {
-		scr_put_at(sx++, sy, *str++);
-		if (sx >= LCD_COLS) {
-			sy++;
-			sx = 0;
-		}
-		if (sy >= LCD_LINES) {
-			sy = 0;
-		}
-	}
-}
 
 // -----------------------------------------------------------------------
 uint8_t read_state()
@@ -91,8 +51,6 @@ uint8_t read_state()
 //	bus[Cr(25)] = 0;
 	return io_change;
 }
-
-#define CONN(row, col) bus[row*48+col]
 
 // -----------------------------------------------------------------------
 void print_raw(uint8_t pos)
