@@ -82,6 +82,7 @@ void print_raw(uint8_t pos)
 char * decimalize(const __flash struct signal *s, char *tmp, uint8_t neg)
 {
 	int8_t *x = (int8_t*) s->reg;
+	uint8_t shift = s->loc;
 	uint16_t val = 0;
 	while (*x != -1) {
 		val <<= 1;
@@ -92,7 +93,7 @@ char * decimalize(const __flash struct signal *s, char *tmp, uint8_t neg)
 		}
 		x++;
 	}
-	sprintf(tmp, "%s=%d", s->name, val);
+	sprintf(tmp, "%s=%ld", s->name, ((uint32_t)val) << shift);
 	return tmp;
 }
 

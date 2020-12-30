@@ -49,8 +49,8 @@ const __flash struct signal PX[] = {
 const int8_t LG[] = { Dr(22), Dr(24), Dr(23), -1 };
 const int8_t LK[] = { Cr(27), Cr(21), Cr(24), Cr(25), -1 };
 const __flash struct signal PM[] = {
-	{"LG",		-1, LG, DEC},
-	{"LK",		-1, LK, DEC},
+	{"LG",		0, LG, DEC},
+	{"LK",		0, LK, DEC},
 
 	{"CYCLE",	Cr(39), NULL, POS},
 	{"WAIT",	Cr(40), NULL, POS},
@@ -74,9 +74,9 @@ const int8_t NPA[] = { Dr(8), Dr(9), Dr(7), Dr(10), -1 };
 const int8_t NPB[] = { Dr(25), Dr(26), Dr(28), Dr(27), -1 };
 const int8_t RS[] = { Cr(5), Cr(9), Cr(6), Cr(8), Cr(7), Cr(2), Cr(4), Cr(3), Dr(8), Cr(10), -1 };
 const __flash struct signal PP[] = {
-	{ "NPA", -1, NPA, DEC },
-	{ "NPB", -1, NPB, DEC },
-	{ "RS", -1, RS, DEC },
+	{ "NPA", 0, NPA, DEC },
+	{ "NPB", 0, NPB, DEC },
+	{ "RS", 0, RS, DEC },
 	{NULL}
 };
 
@@ -84,11 +84,11 @@ const int8_t DNB[] = { Dr(40), Dr(41), Dr(42), Dr(43), -1 };
 const int8_t R[] = { Cr(47), Cr(46), Cr(48), -1 };
 const int8_t KI[] = { Dr(45), Dr(44), -1 };
 const __flash struct signal PR[] = {
-	{ "DNB", -1, DNB, DEC },
+	{ "DNB", 0, DNB, DEC },
 	{ "BLR", Cr(41), NULL, NEG },
 	{ "W>R", Cr(43), NULL, NEG },
-	{ "R", -1, R, DECNEG },
-	{ "KI", -1, KI, DEC },
+	{ "R", 0, R, DECNEG },
+	{ "KI", 0, KI, DEC },
 	{ "DQB", Dr(46), NULL, NEG },
 	{ "DPN", Dr(48), NULL, NEG },
 	{NULL}
@@ -113,10 +113,10 @@ const __flash struct signal PA[] = {
 };
 
 const int8_t FD[] = { Cr(21), Cr(22), Cr(23), Cr(24), Cr(39), Cr(40), Cr(41), Cr(42), -1 };
-const int8_t FIC1[] = { Cr(44), Cr(45), Cr(46), Cr(47), -1 };
-const __flash struct signal FPAR[] = {
-	{ "D", -1, FD, DEC },
-	{ "FIC1", -1, FIC1, DEC },
+const int8_t FIC1[] = { Cr(44), Cr(45), Cr(47), Cr(46), -1 };
+const __flash struct signal FPMR[] = {
+	{ "D", 0, FD, DEC },
+	{ "FIC1", 0, FIC1, DEC },
 	{ "SGN", Dr(21), NULL, POS },
 	{ "WT", Cr(25), NULL, POS },
 	{ "WDT", Cr(26), NULL, POS },
@@ -129,9 +129,9 @@ const __flash struct signal FPAR[] = {
 };
 
 const int8_t FIC2[] = { Cl(51), Cl(50), -1 };
-const __flash struct signal FPAL[] = {
+const __flash struct signal FPML[] = {
 	{ "G", Cl(49), NULL, POS },
-	{ "FIC2", -1, FIC2, DEC },
+	{ "FIC2", 4, FIC2, DEC },
 	{ "DI", Cl(52), NULL, POS },
 	{ "IDI", Cl(53), NULL, POS },
 	{ "M-1", Cl(54), NULL, POS },
@@ -145,8 +145,8 @@ const __flash struct signal FPAL[] = {
 };
 
 const int8_t T1[] = { Dr(7), Dr(6), Cr(2), Dr(4), Cr(4), Dr(7), Cr(8), Cr(9), Cr(21), Cr(10), Cr(22), Cr(20), Cr(23), Cr(25), Cr(26), Cr(24), Cr(27), Cr(41), Cr(29), Cr(39), Cr(42), Cr(44), Cr(28), Cr(40), Cr(47), Cr(48), -1 };
-const __flash struct signal FPMR[] = {
-	{ "T1", -1, T1, DEC },
+const __flash struct signal FPAR[] = {
+	{ "T1", 14, T1, DEC },
 	{ "TAB", Cr(1), NULL, NEG },
 	{ "TAA", Dr(1), NULL, NEG },
 	{ "CLKTA", Dr(2), NULL, NEG },
@@ -172,8 +172,8 @@ const __flash struct signal FPMR[] = {
 };
 
 const int8_t T2[] = { Cl(49), Cl(50), Cl(58), Cl(53), Cl(52), Cl(54), Cl(68), Cl(69), Cl(70), Cl(72), Cl(89), Cl(88), Cl(86), Cl(71), -1 };
-const __flash struct signal FPML[] = {
-	{ "T2", -1, T2, DEC },
+const __flash struct signal FPAL[] = {
+	{ "T2", 0, T2, DEC },
 	{ "0>M", Cl(55), NULL, NEG },
 	{ "F9KA", Cl(56), NULL, POS },
 	{ "LKB", Cl(57), NULL, POS },
@@ -203,7 +203,7 @@ const __flash struct signal FPS[] = {
 	{ "F13", Cl(91), NULL, POS },
 
 	{ "S1", Cl(71), NULL, POS },
-	{ "LP", -1, LP, DEC },
+	{ "LP", 0, LP, DEC },
 	{NULL}
 };
 
