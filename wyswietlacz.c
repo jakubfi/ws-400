@@ -279,14 +279,8 @@ void setup()
 }
 
 // -----------------------------------------------------------------------
-// ---- MAIN -------------------------------------------------------------
-// -----------------------------------------------------------------------
-int main(void)
+int check_rotation(void)
 {
-	setup();
-
-	scr_clr();
-
 	// If started with "OK" button pressed, assume display rotated 180 deg.
 	uint8_t rotated = 0;
 	if (!(SW_PIN & SW_OK)) {
@@ -298,6 +292,17 @@ int main(void)
 	}
 	// wait for keys depress
 	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
+	return rotated;
+}
+
+// -----------------------------------------------------------------------
+// ---- MAIN -------------------------------------------------------------
+// -----------------------------------------------------------------------
+int main(void)
+{
+	setup();
+	scr_clr();
+	uint8_t rotated = check_rotation();
 
 	const struct signal *conn;
 	conn = autodetect();
