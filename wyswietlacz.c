@@ -90,8 +90,6 @@ void print_raw(uint8_t pos)
 			xpos++;
 		}
 	}
-
-	scr_blit();
 }
 
 // -----------------------------------------------------------------------
@@ -169,8 +167,6 @@ const struct signal * print_state(const __flash struct signal *s)
 	}
 
 	if (!s->name) s = NULL;
-
-	scr_blit();
 
 	return s;
 }
@@ -355,6 +351,7 @@ int main(void)
 		} else {
 			next_signal = print_state(start_signal);
 		}
+		scr_blit();
 	}
 }
 
