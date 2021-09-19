@@ -3,23 +3,23 @@
 
 #include <inttypes.h>
 
-#define Dr(n) (48-n)
-#define Cr(n) (48-n+48)
+// macros for setting signal position on the debug bus
+#define Dr(n) (48-n)	// upper row, right connector
+#define Cr(n) (48-n+48)	// lower row, right connector
+#define Dl(n) (96-n)	// upper row, left connector
+#define Cl(n) (96-n+48)	// lower row, left connector
 
-#define Dl(n) (96-n)
-#define Cl(n) (96-n+48)
-
-enum disp_attrs {
+enum signal_types {
 	POS = 0,
 	NEG,
 	BIN, DEC, DECNEG, HEX
 };
 
 struct signal {
-	const char *name;
-	const int8_t loc;
-	const int8_t *reg;
-	const uint8_t polarity;
+	const char *name;			// name of the signal
+	const int8_t loc;			// location on the debug bus
+	const int8_t *reg;			// pointer to a register signal table, if this is a n-bit register
+	const uint8_t type;			// signal type: POSitive, NEGative, DECimal, DECimalNEGative
 };
 
 extern const __flash struct signal PX[];

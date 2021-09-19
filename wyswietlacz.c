@@ -23,14 +23,28 @@
 MCP23017 dev[6];
 uint8_t bus[96];
 
+/*
+	Bus represents one 96-pin debug edge connector, either left or right.
+	Positions are numbered as follows:
+
+	 95 93 91 ...       ... 7 5 3 1
+	.-------------\   \------------.
+	|             /   /            |
+    `-------------\   \------------'
+	 94 92 90 ...       ... 6 4 2 0
+
+	 if "rotated" is set, whole thing gets rotated 180 deg.
+
+*/
+
 // -----------------------------------------------------------------------
-uint8_t read_state()
+uint8_t read_state(uint8_t rotated)
 {
 	uint8_t pos = 0;
 	static uint16_t last_data[6];
 	uint8_t data_change = 0;
 
-	// 6 ICs to read data from
+	// 6 ICs to read data from (6x16 bit)
 	for (uint8_t i=0 ; i<6 ; i++) {
 		uint16_t data;
 		data = mcp23017_read_register(dev+i, MCP23017_GPIOA);
@@ -41,6 +55,8 @@ uint8_t read_state()
 		// fill bus data
 		for (int8_t b=15 ; b>=0 ; b--) {
 			uint8_t loc = 48*(pos&1) + (pos>>1);
+			// if the device is rotated, fill bus table from the end
+			if (rotated) loc = 95 - loc;
 			bus[loc] = (data >> b) & 1;
 			pos++;
 		}
@@ -130,7 +146,7 @@ const struct signal * print_state(const __flash struct signal *s)
 
 	while (s->name) {
 		str = NULL;
-		switch (s->polarity) {
+		switch (s->type) {
 			case POS:
 				if (bus[s->loc]) str = (char *) s->name;
 				break;
@@ -234,6 +250,7 @@ const struct signal * select()
 // -----------------------------------------------------------------------
 const struct signal * autodetect()
 {
+	// not implemented
 	return NULL;
 }
 
@@ -272,6 +289,20 @@ int main(void)
 {
 	setup();
 
+	scr_clr();
+
+	// If started with "OK" button pressed, assume display rotated 180 deg.
+	uint8_t rotated = 0;
+	if (!(SW_PIN & SW_OK)) {
+		rotated = 1;
+		scr_print_at(0, 0, " .-  DEVICE  <-.");
+		scr_print_at(0, 1, " `>  ROTATED  -'");
+		scr_blit();
+		_delay_ms(500);
+	}
+	// wait for keys depress
+	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
+
 	const struct signal *conn;
 	conn = autodetect();
 	if (!conn) {
@@ -289,10 +320,10 @@ int main(void)
 	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
 
 	while (1) {
-		/*uint8_t ch = */
-		read_state();
-		/*if (ch) start_signal = conn;*/
+		// read debug bus state
+		read_state(rotated);
 
+		// handle selecting next portion of signals (if they don't fit on the screen)
 		psel = sel;
 		sel = SW_PIN & SW_SEL;
 		if (!sel && psel) {
@@ -309,6 +340,7 @@ int main(void)
 			_delay_ms(150);
 		}
 
+		// pressing "OK" switches between raw and normal display
 		pok = ok;
 		ok = SW_PIN & SW_OK;
 		if (!ok && pok) {
@@ -316,6 +348,8 @@ int main(void)
 			start_signal = conn;
 			_delay_ms(150);
 		}
+
+		// print signals
 		if (raw) {
 			print_raw(raw_pos);
 		} else {
