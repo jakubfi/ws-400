@@ -20,7 +20,7 @@ struct signal {
 	const int8_t loc;
 	const int8_t *reg;
 	const uint8_t polarity;
-} signal;
+};
 
 extern const __flash struct signal PX[];
 extern const __flash struct signal PM[];
