@@ -25,7 +25,7 @@ uint8_t bus[96];
 
 /*
 	Bus represents one 96-pin debug edge connector, either left or right.
-	Positions are numbered as follows:
+	Indexes translate to pin positions as follows:
 
 	 95 93 91 ...       ... 7 5 3 1
 	.-------------\   \------------.
@@ -33,7 +33,8 @@ uint8_t bus[96];
     `-------------\   \------------'
 	 94 92 90 ...       ... 6 4 2 0
 
-	 if "rotated" is set, whole thing gets rotated 180 deg.
+	 This is due to how port expanders are connected to the debug connector
+	 If "rotated" is set, whole thing gets rotated 180 deg.
 
 */
 
@@ -95,18 +96,14 @@ void print_raw(uint8_t pos)
 }
 
 // -----------------------------------------------------------------------
-char * decimalize(const __flash struct signal *s, char *tmp, uint8_t neg)
+char * decimalize(const __flash struct signal *s, char *tmp, uint8_t polarity)
 {
 	int8_t *x = (int8_t*) s->reg;
 	uint8_t shift = s->loc;
 	uint16_t val = 0;
 	while (*x != -1) {
 		val <<= 1;
-		if (neg) {
-			if (!bus[*x]) val |= 1;
-		} else {
-			if (bus[*x]) val |= 1;
-		}
+		if (bus[*x] == polarity) val |= 1;
 		x++;
 	}
 	sprintf(tmp, "%s=%ld", s->name, ((uint32_t)val) << shift);
@@ -146,20 +143,18 @@ const struct signal * print_state(const __flash struct signal *s)
 
 	while (s->name) {
 		str = NULL;
-		switch (s->type) {
-			case POS:
-				if (bus[s->loc]) str = (char *) s->name;
-				break;
-			case NEG:
-				if (!bus[s->loc]) str = (char *) s->name;
+		uint8_t sig_polarity = s->attr & SIG_POLARITY_MASK;
+		uint8_t sig_type = s->attr & SIG_TYPE_MASK;
+
+		switch (sig_type) {
+			case BIN:
+				if (bus[s->loc] == sig_polarity) str = (char *) s->name;
 				break;
 			case DEC:
-				str = decimalize(s, tmp, 0);
-				break;
-			case DECNEG:
-				str = decimalize(s, tmp, 1);
+				str = decimalize(s, tmp, sig_polarity);
 				break;
 		}
+
 		no_fit = smart_print(str);
 		if (no_fit) {
 			break;
