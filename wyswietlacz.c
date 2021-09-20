@@ -142,17 +142,14 @@ const struct signal * print_state(const __flash struct signal *s)
 	scr_clr();
 
 	while (s->name) {
-		str = NULL;
 		uint8_t sig_polarity = s->attr & SIG_POLARITY_MASK;
 		uint8_t sig_type = s->attr & SIG_TYPE_MASK;
 
-		switch (sig_type) {
-			case BIN:
-				if (bus[s->loc] == sig_polarity) str = (char *) s->name;
-				break;
-			case DEC:
-				str = decimalize(s, tmp, sig_polarity);
-				break;
+		str = NULL;
+		if (sig_type == BIN) {
+			if (bus[s->loc] == sig_polarity) str = (char *) s->name;
+		} else if (sig_type == DEC) {
+			str = decimalize(s, tmp, sig_polarity);
 		}
 
 		no_fit = smart_print(str);
