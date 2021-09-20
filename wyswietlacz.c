@@ -41,16 +41,18 @@ uint8_t bus[96];
 uint8_t read_state(uint8_t rotated)
 {
 	uint8_t pos = 0;
-	static uint16_t last_data[6];
-	uint8_t data_change = 0;
+	static uint16_t last_data[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+	uint8_t data_changed = 0;
 
 	// 6 ICs to read data from (6x16 bit)
 	for (uint8_t i=0 ; i<6 ; i++) {
 		uint16_t data;
 		data = mcp23017_read_register(dev+i, MCP23017_GPIOA);
 		data |= mcp23017_read_register(dev+i, MCP23017_GPIOB) << 8;
-		if (!data_change && (data != last_data[i])) data_change = 1;
-		last_data[i] = data;
+		if (data != last_data[i]) {
+			data_changed = 1;
+			last_data[i] = data;
+		}
 
 		// fill bus data
 		for (int8_t b=15 ; b>=0 ; b--) {
@@ -62,7 +64,7 @@ uint8_t read_state(uint8_t rotated)
 		}
 	}
 
-	return data_change;
+	return data_changed;
 }
 
 // -----------------------------------------------------------------------
@@ -320,6 +322,7 @@ int main(void)
 	uint8_t raw = 0;
 	uint8_t raw_pos = 0;
 	uint8_t key_was_pressed = 0;
+	uint8_t data_changed;
 	const struct signal *selected_connector;
 	const __flash struct signal *start_signal;
 	const __flash struct signal *next_signal = NULL;
@@ -333,7 +336,7 @@ int main(void)
 
 	while (1) {
 		// read debug bus state
-		read_state(rotated);
+		data_changed = read_state(rotated);
 
 		// Handle selecting next portion of signals (if they don't fit on the screen)
 		if (key_pressed(SW_SEL)) {
@@ -354,13 +357,17 @@ int main(void)
 			start_signal = selected_connector;
 		}
 
-		// Update screen immediatly after a key press for nice interactivity
-		if (raw) {
-			print_raw(raw_pos);
-		} else {
-			next_signal = print_state(start_signal);
+		// Update screen only if signal state changed or key was pressed.
+		// Do it immediatly after a key press for nice interactivity
+		// (don't wait for key depress).
+		if (data_changed || key_was_pressed) {
+			if (raw) {
+				print_raw(raw_pos);
+			} else {
+				next_signal = print_state(start_signal);
+			}
+			scr_blit();
 		}
-		scr_blit();
 
 		// Wait for key depress only if a key was pressed in current loop
 		// so we don't wait if a key was pressed during screen update.
