@@ -210,44 +210,62 @@ void menu_update(uint8_t pos)
 }
 
 // -----------------------------------------------------------------------
-const struct signal * select()
+uint8_t key_pressed(uint8_t expected_key)
+{
+	uint8_t shift_reg = 0;
+	int8_t repetitions = 0;
+
+	do {
+		shift_reg |= (SW_PIN & expected_key) ? 0 : 1;
+		if ((repetitions == 0) && (shift_reg == 0)) {
+			// no initial key press, nothing to do
+			return 0;
+		} else if (shift_reg == 0xff) {
+			// got a key press
+			return 1;
+		} else {
+			// press detected, start debouncing
+			shift_reg <<= 1;
+			repetitions++;
+			_delay_ms(4);
+		}
+	} while (repetitions < 40);
+
+	// no keypress after N repetitions
+	return 0;
+}
+
+// -----------------------------------------------------------------------
+void wait_no_key(void)
+{
+	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
+}
+
+// -----------------------------------------------------------------------
+const struct signal * select_connector()
 {
 	const uint8_t CONN_COUNT = 10;
 	const struct signal *connections[] = { PX, PM, PP, PR, PA, FPAL, FPAR, FPML, FPMR, FPS };
 
 	uint8_t pos = 0;
-	uint8_t sel = 0;
-	uint8_t psel = 0;
-	uint8_t ok = 0;
 
 	menu_update(0);
 
 	while (1) {
-		psel = sel;
-		ok = SW_PIN & SW_OK;
-		if (!ok) {
-			_delay_ms(150);
+		if (key_pressed(SW_OK)) {
+			wait_no_key();
 			break;
-		}
-		sel = SW_PIN & SW_SEL;
-		if (!sel && psel) {
+		} else if (key_pressed(SW_SEL)) {
 			pos++;
 			if (pos > CONN_COUNT-1) {
 				pos = 0;
 			}
 			menu_update(pos);
-			_delay_ms(150);
+			wait_no_key();
 		}
 	}
 
 	return connections[pos];
-}
-
-// -----------------------------------------------------------------------
-const struct signal * autodetect()
-{
-	// not implemented
-	return NULL;
 }
 
 // -----------------------------------------------------------------------
@@ -279,20 +297,18 @@ void setup()
 }
 
 // -----------------------------------------------------------------------
-int check_rotation(void)
+int select_rotation(void)
 {
 	// If started with "OK" button pressed, assume display rotated 180 deg.
-	uint8_t rotated = 0;
-	if (!(SW_PIN & SW_OK)) {
-		rotated = 1;
-		scr_print_at(0, 0, " .-  DEVICE  <-.");
-		scr_print_at(0, 1, " `>  ROTATED  -'");
-		scr_blit();
-		_delay_ms(500);
-	}
-	// wait for keys depress
-	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
-	return rotated;
+	if (!key_pressed(SW_OK)) return 0;
+
+	scr_print_at(1, 0, ".-  DEVICE  <-.");
+	scr_print_at(1, 1, "`>  ROTATED  -'");
+	scr_blit();
+	_delay_ms(500);
+	wait_no_key();
+
+	return 1;
 }
 
 // -----------------------------------------------------------------------
@@ -300,63 +316,59 @@ int check_rotation(void)
 // -----------------------------------------------------------------------
 int main(void)
 {
-	setup();
-	scr_clr();
-	uint8_t rotated = check_rotation();
-
-	const struct signal *conn;
-	conn = autodetect();
-	if (!conn) {
-	   	conn = select();
-	}
-
+	uint8_t rotated;
 	uint8_t raw = 0;
 	uint8_t raw_pos = 0;
-	const __flash struct signal *start_signal = conn;
+	uint8_t key_was_pressed = 0;
+	const struct signal *selected_connector;
+	const __flash struct signal *start_signal;
 	const __flash struct signal *next_signal = NULL;
-	uint8_t sel=1, psel;
-	uint8_t ok=1, pok;
 
-	// wait for keys depress
-	while ((SW_PIN & (SW_SEL|SW_OK)) != (SW_SEL|SW_OK));
+	setup();
+	scr_clr();
+
+	rotated = select_rotation();
+	selected_connector = select_connector();
+	start_signal = selected_connector;
 
 	while (1) {
 		// read debug bus state
 		read_state(rotated);
 
-		// handle selecting next portion of signals (if they don't fit on the screen)
-		psel = sel;
-		sel = SW_PIN & SW_SEL;
-		if (!sel && psel) {
+		// Handle selecting next portion of signals (if they don't fit on the screen)
+		if (key_pressed(SW_SEL)) {
+			key_was_pressed = 1;
 			if (raw) {
-				if (raw_pos<4) {
-					raw_pos++;
-				} else {
-					raw_pos = 0;
-				}
+				if (raw_pos<4) raw_pos++;
+				else raw_pos = 0;
 			} else {
 				if (next_signal) start_signal = next_signal;
-				else start_signal = conn;
+				else start_signal = selected_connector;
 			}
-			_delay_ms(150);
 		}
 
-		// pressing "OK" switches between raw and normal display
-		pok = ok;
-		ok = SW_PIN & SW_OK;
-		if (!ok && pok) {
+		// Pressing "OK" switches between raw and normal display
+		if (key_pressed(SW_OK)) {
+			key_was_pressed = 1;
 			raw = ~raw;
-			start_signal = conn;
-			_delay_ms(150);
+			start_signal = selected_connector;
 		}
 
-		// print signals
+		// Update screen immediatly after a key press for nice interactivity
 		if (raw) {
 			print_raw(raw_pos);
 		} else {
 			next_signal = print_state(start_signal);
 		}
 		scr_blit();
+
+		// Wait for key depress only if a key was pressed in current loop
+		// so we don't wait if a key was pressed during screen update.
+		// That's to avoid ghost presses.
+		if (key_was_pressed) {
+			key_was_pressed = 0;
+			wait_no_key();
+		}
 	}
 }
 
