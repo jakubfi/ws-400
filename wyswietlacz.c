@@ -18,8 +18,6 @@
 #define SW_SEL	(1 << PC3)
 #define SW_OK	(1 << PC2)
 
-#define CONN(row, col) bus[row*48+col]
-
 MCP23017 dev[6];
 uint8_t bus[96];
 
@@ -27,16 +25,30 @@ uint8_t bus[96];
 	Bus represents one 96-pin debug edge connector, either left or right.
 	Indexes translate to pin positions as follows:
 
-	 95 93 91 ...       ... 7 5 3 1
-	.-------------\   \------------.
-	|             /   /            |
-    `-------------\   \------------'
-	 94 92 90 ...       ... 6 4 2 0
+	bus  0   1   2         45  46  47
+	IC   1B7 1B5 1B3       6A5 6A3 6A1
+	   .-------------\   \------------.
+	   | D48 D47 D46 /   / D2  D1  D0 |
+	   | C48 C47 C46 \   \ C2  C1  C0 |
+       `-------------/   /------------'
+	IC   1B6 1B4 1B2       6A4 6A2 6A0
+	bus  48  49  50        93  94  95
 
 	 This is due to how port expanders are connected to the debug connector
 	 If "rotated" is set, whole thing gets rotated 180 deg.
 
 */
+
+#ifdef SIMULATED
+uint16_t sim_data[6] = {
+	0b0000000000000000,
+	0b1000000010000000,
+	0b1100110011001100,
+	0b1110111011101110,
+	0b0111111101111111,
+	0b1111111111111111,
+};
+#endif
 
 // -----------------------------------------------------------------------
 uint8_t read_state(uint8_t rotated)
@@ -48,8 +60,12 @@ uint8_t read_state(uint8_t rotated)
 	// 6 ICs to read data from (6x16 bit)
 	for (uint8_t i=0 ; i<6 ; i++) {
 		uint16_t data;
-		data = mcp23017_read_register(dev+i, MCP23017_GPIOA);
-		data |= mcp23017_read_register(dev+i, MCP23017_GPIOB) << 8;
+#ifdef SIMULATED
+		data = sim_data[i];
+#else
+		data = mcp23017_read_register(dev+i, MCP23017_GPIOB) << 8;
+		data |= mcp23017_read_register(dev+i, MCP23017_GPIOA);
+#endif
 		if (data != last_data[i]) {
 			data_changed = 1;
 			last_data[i] = data;
@@ -73,27 +89,26 @@ uint8_t read_state(uint8_t rotated)
 // -----------------------------------------------------------------------
 void print_raw(uint8_t pos)
 {
-	uint8_t xpos;
-
-	int8_t count = (pos == 4) ? 8 : 10;
-	int8_t start = 38 - 10*pos;
-	if (start<0) start = 0;
-	int8_t end = start + count;
+	int8_t columns = 8;
+	int8_t start = columns * pos;
+	int8_t end = start + columns;
 
 	scr_clr();
 	char s[12];
-	sprintf(s, "%d-%d", 10*pos + count, 10*pos + 1);
+	sprintf(s, "%d-%d", end, start);
 	scr_print_at(11, 0, " pos");
 	scr_print_at(11, 1, s);
 	scr_put_at(10, 0, CH_VDOT);
 	scr_put_at(10, 1, CH_VDOT);
 
-	for (uint8_t y=0 ; y<2 ; y++) {
-		xpos = (pos == 4) ? 2 : 0;
-		for (uint8_t x=start ; x<end ; x++) {
-			scr_put_at(xpos, y, '0' + CONN(y, x));
-			xpos++;
+	uint8_t xpos = 8;
+	for (uint8_t x=start ; x<end ; x++) {
+		for (uint8_t y=0 ; y<2 ; y++) {
+			uint8_t val = '0' + bus[y*48 + 47-x];
+			scr_put_at(xpos, y, val);
 		}
+		xpos--;
+		if (xpos == 4) xpos--; // additional space between nibbles
 	}
 }
 
@@ -336,8 +351,8 @@ int main(void)
 		if (key_pressed(SW_SEL)) {
 			key_was_pressed = 1;
 			if (raw) {
-				if (raw_pos<4) raw_pos++;
-				else raw_pos = 0;
+				raw_pos++;
+				if (raw_pos>5) raw_pos = 0;
 			} else {
 				if (next_signal) start_signal = next_signal;
 				else start_signal = selected_connector;
