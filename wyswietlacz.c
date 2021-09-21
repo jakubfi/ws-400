@@ -53,15 +53,17 @@ uint8_t read_state(uint8_t rotated)
 		if (data != last_data[i]) {
 			data_changed = 1;
 			last_data[i] = data;
-		}
 
-		// fill bus data
-		for (int8_t b=15 ; b>=0 ; b--) {
-			uint8_t loc = 48*(pos&1) + (pos>>1);
-			// if the device is rotated, fill bus table from the end
-			if (rotated) loc = 95 - loc;
-			bus[loc] = (data >> b) & 1;
-			pos++;
+			// fill bus data
+			for (int8_t b=15 ; b>=0 ; b--) {
+				uint8_t loc = 48*(pos&1) + (pos>>1);
+				// if the device is rotated, fill bus table from the end
+				if (rotated) loc = 95 - loc;
+				bus[loc] = (data >> b) & 1;
+				pos++;
+			}
+		} else {
+			pos += 16;
 		}
 	}
 
@@ -73,21 +75,21 @@ void print_raw(uint8_t pos)
 {
 	uint8_t xpos;
 
-	int8_t count = pos==4 ? 8 : 10;
-	int8_t start = 38-10*pos;
+	int8_t count = (pos == 4) ? 8 : 10;
+	int8_t start = 38 - 10*pos;
 	if (start<0) start = 0;
 	int8_t end = start + count;
 
 	scr_clr();
 	char s[12];
-	sprintf(s, "%d-%d", pos*10+count, pos*10+1);
+	sprintf(s, "%d-%d", 10*pos + count, 10*pos + 1);
 	scr_print_at(11, 0, " pos");
 	scr_print_at(11, 1, s);
 	scr_put_at(10, 0, CH_VDOT);
 	scr_put_at(10, 1, CH_VDOT);
 
 	for (uint8_t y=0 ; y<2 ; y++) {
-		xpos = pos==4 ? 2 : 0;
+		xpos = (pos == 4) ? 2 : 0;
 		for (uint8_t x=start ; x<end ; x++) {
 			scr_put_at(xpos, y, '0' + CONN(y, x));
 			xpos++;
@@ -251,7 +253,7 @@ const struct signal * select_connector()
 			break;
 		} else if (key_pressed(SW_SEL)) {
 			pos++;
-			if (pos > CONN_COUNT-1) {
+			if (pos >= CONN_COUNT) {
 				pos = 0;
 			}
 			menu_update(pos);
