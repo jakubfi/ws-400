@@ -214,7 +214,7 @@ const int8_t FIC2[] = {
 };
 const __flash struct signal FPML[] = {
 	{"G",		C(49),	NULL,	BIN|POS},
-	{"FIC2",	0,		FIC2,	DEC|POS},
+	{"FIC2",	4,		FIC2,	DEC|POS},
 	{"DI",		C(52),	NULL,	BIN|POS},
 	{"IDI",		C(53),	NULL,	BIN|POS},
 	{"M-1",		C(54),	NULL,	BIN|POS},
