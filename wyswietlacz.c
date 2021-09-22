@@ -175,7 +175,7 @@ int smart_print(char *str)
 const struct signal * print_state(const __flash struct signal *s)
 {
 	char *str;
-	char tmp[10];
+	char tmp[16];
 	uint8_t no_fit = 0;
 
 	scr_clr();
