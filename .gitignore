@@ -1,6 +1,8 @@
-/*.hex
-/*.swp
-/*.lst
-/*.o
-/*.out
-/*.map
+fw/*.hex
+fw/*.swp
+fw/*.lst
+fw/*.o
+fw/*.out
+fw/*.map
+/fp-info-cache
+/*-bak
