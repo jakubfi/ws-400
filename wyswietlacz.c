@@ -42,7 +42,6 @@ MCP23017 dev[6];
 uint8_t rotated = 0;
 uint16_t raw_data[6];
 
-#define SIMULATED
 // -----------------------------------------------------------------------
 void update_state(void)
 {
@@ -87,7 +86,7 @@ uint8_t read_signal(uint8_t row, uint8_t column)
 	// Each word holds 8 columns of data
 	const uint8_t word = column / 8;
 	// 2 bits per column, 16 bits per word
-	// upper row holds even bits (when no rotation)
+	// upper row holds even bits (with no rotation)
 	const uint8_t bit = 15 - (2 * (column % 8) + row);
 
 	return (raw_data[word] >> bit) & 1;
@@ -109,9 +108,10 @@ void print_raw(uint8_t pos)
 	const int8_t columns = 8;
 	const int8_t start = 1 + columns * pos;
 	const int8_t end = start + columns;
+	char s[12];
 
 	scr_clr();
-	char s[12];
+
 	sprintf(s, "%d-%d", end-1, start);
 	scr_print_at(11, 0, " pos");
 	scr_print_at(11, 1, s);
