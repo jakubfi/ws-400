@@ -132,15 +132,20 @@ void print_raw(uint8_t pos)
 // -----------------------------------------------------------------------
 char * decimalize(const __flash struct signal *s, char *tmp, uint8_t polarity)
 {
-	int8_t *x = (int8_t*) s->reg;
-	const uint8_t shift = s->rowcol;
+	int8_t *x = (int8_t*) s->d.reg;
+	// Value may require shifting left if it is a part of larger register.
+	// Shift is stored in the attributes.
+	const uint8_t shift = (s->attr & SIG_SHIFT_MASK) >> SIG_SHIFT_POS;
+
 	uint16_t val = 0;
-	while (*x != -1) {
+	while (*x != 0) {
 		val <<= 1;
 		if (read_signal_rowcol(*x) == polarity) val |= 1;
 		x++;
 	}
+
 	sprintf(tmp, "%s=%ld", s->name, ((uint32_t)val) << shift);
+
 	return tmp;
 }
 
@@ -181,7 +186,7 @@ const struct signal * print_state(const __flash struct signal *s)
 
 		str = NULL;
 		if (sig_type == BIN) {
-			if (read_signal_rowcol(s->rowcol) == sig_polarity) str = (char *) s->name;
+			if (read_signal_rowcol(s->d.rowcol) == sig_polarity) str = (char *) s->name;
 		} else if (sig_type == DEC) {
 			str = decimalize(s, tmp, sig_polarity);
 		}

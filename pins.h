@@ -10,24 +10,26 @@
 #define D(column) (column | (ROW_D << 7))
 #define C(column) (column | (ROW_C << 7))
 
-#define SIG_POLARITY_MASK 0b00000001
-enum signal_polarities {
+#define SIG_POLARITY_MASK	0b00000001
+#define SIG_TYPE_MASK		0b00000110
+#define SIG_SHIFT_MASK		0b11110000
+#define SIG_SHIFT_POS		4
+
+enum signal_attrs {
 	NEG = 0 << 0,
 	POS = 1 << 0,
-};
-
-#define SIG_TYPE_MASK 0b00000110
-enum signal_types {
 	BIN = 0 << 1,
 	DEC = 1 << 1,
 	HEX = 2 << 1,
 };
 
 struct signal {
-	const char *name;		// name of the signal
-	const int8_t rowcol;	// location on the debug bus
-	const int8_t *reg;		// pointer to a register signal table, if this is a n-bit register
-	const uint8_t attr;		// signal attributes
+	const char *name;			// name of the signal
+	union d {
+		const int8_t rowcol;	// signal location on the debug bus or shift for registers
+		const int8_t *reg;		// pointer to a register signal table, if this is a n-bit register
+	} d;
+	const uint8_t attr;			// signal attributes
 };
 
 extern const __flash struct signal PX[];
