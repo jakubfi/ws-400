@@ -6,3 +6,4 @@ fw/*.out
 fw/*.map
 /fp-info-cache
 /*-bak
+/*.net
